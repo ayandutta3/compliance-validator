@@ -33,6 +33,7 @@ A lightweight, single-file FastAPI backend that uses **Neo4j** (graph database) 
 ```
 compliance-validator/
 ├── main.py                          ← FastAPI app (models, DB, LLM, endpoints)
+├── app.py                           ← Streamlit UI frontend
 ├── ingest_rules.py                  ← CLI utility: seed Neo4j from the CSV
 ├── synthetic_compliance_rules.csv   ← Source-of-truth compliance rules data
 ├── sample_requests_responses.txt    ← Sample API request/response pairs
@@ -72,13 +73,14 @@ Copy the template and fill in your credentials:
 # Open it and replace the placeholder values:
 ```
 
-| Variable         | Description                                  | Default         |
-|-----------------|----------------------------------------------|-----------------|
+| Variable          | Description                                  | Default         |
+|------------------|----------------------------------------------|-----------------|
 | `OPENAI_API_KEY` | Your OpenAI API key (`sk-...`)              | **Required**    |
 | `LLM_MODEL`      | OpenAI model to use                         | `gpt-4o-mini`   |
 | `NEO4J_URI`      | Neo4j Bolt connection URI                   | `bolt://localhost:7687` |
 | `NEO4J_USER`     | Neo4j username                              | `neo4j`         |
 | `NEO4J_PASSWORD` | Neo4j password                              | **Required**    |
+| `API_BASE_URL`   | Base URL the Streamlit UI calls             | `http://localhost:8000` |
 
 > **Note:** If Neo4j is offline or unreachable, the app automatically falls back to a built-in simulated rule set so demos and development work without a running database.
 
@@ -194,6 +196,39 @@ curl -X POST http://localhost:8000/api/v1/audit \
   ]
 }
 ```
+
+---
+
+## Streamlit UI (`app.py`)
+
+A rich, dark-themed web dashboard that wraps the FastAPI backend with a visual audit interface.
+
+### Launch
+
+> The FastAPI backend (`python main.py`) must be running **before** starting the UI.
+
+```bash
+# Terminal 1 — start the API
+python main.py
+
+# Terminal 2 — start the Streamlit UI
+streamlit run app.py
+```
+
+The UI opens at: **http://localhost:8501**
+
+### Features
+
+| Feature | Description |
+|--------|-------------|
+| **Framework selector** | Pick from SEC-2026, HIPAA-INS, GDPR-EU-2025, or ESG-CORP |
+| **Document upload** | Drag-and-drop `.txt` / `.md` file |
+| **Live API health indicator** | Pulsing dot shows backend status + active LLM model |
+| **Compliance score gauge** | SVG arc gauge coloured green / amber / red |
+| **Summary metric cards** | Rules evaluated, compliant, violations, not-applicable |
+| **Per-rule finding cards** | Colour-coded cards with status badge, evidence, gap analysis, confidence bar |
+| **Status filter** | Filter findings by COMPLIANT / NON-COMPLIANT / NOT-APPLICABLE |
+| **JSON export** | Download the full `AuditReport` as a timestamped `.json` file |
 
 ---
 
