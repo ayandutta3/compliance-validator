@@ -32,10 +32,13 @@ A lightweight, single-file FastAPI backend that uses **Neo4j** (graph database) 
 
 ```
 compliance-validator/
-├── main.py            ← Entire application (models, DB, LLM, endpoints)
-├── requirements.txt   ← Python dependencies
-├── .env               ← Your secrets (never commit this!)
-└── README.md          ← This file
+├── main.py                          ← FastAPI app (models, DB, LLM, endpoints)
+├── ingest_rules.py                  ← CLI utility: seed Neo4j from the CSV
+├── synthetic_compliance_rules.csv   ← Source-of-truth compliance rules data
+├── sample_requests_responses.txt    ← Sample API request/response pairs
+├── requirements.txt                 ← Python dependencies
+├── .env                             ← Your secrets (never commit this!)
+└── README.md                        ← This file
 ```
 
 ---
@@ -79,26 +82,39 @@ Copy the template and fill in your credentials:
 
 > **Note:** If Neo4j is offline or unreachable, the app automatically falls back to a built-in simulated rule set so demos and development work without a running database.
 
-### 4. (Optional) Seed Neo4j with Rules
+### 4. Seed Neo4j with Compliance Rules
 
-Connect to your Neo4j instance (via Neo4j Desktop or Browser) and run a Cypher query like:
+Use the bundled **`ingest_rules.py`** utility to populate the graph database from `synthetic_compliance_rules.csv` in one command:
 
-```cypher
-CREATE (f:Framework {id: "GDPR"})
-CREATE (r1:Rule {
-    rule_id: "GDPR-ART-5",
-    title: "Data Minimisation",
-    description: "Collect only the minimum personal data necessary for the stated purpose.",
-    article: "Article 5(1)(c)"
-})
-CREATE (f)-[:HAS_RULE]->(r1);
+```bash
+python ingest_rules.py
 ```
 
-The app queries the following Cypher pattern:
+Expected output:
+
+```
+============================================================
+  Compliance Rules — Neo4j Ingestion Utility
+============================================================
+[INFO]  Loaded 12 rule(s) from: synthetic_compliance_rules.csv
+[INFO]  Connecting to Neo4j at bolt://localhost:7687 …
+  [  1/12] ✔  Merged Rule 'SEC-2026-A1' → Framework 'SEC-2026'
+  [  2/12] ✔  Merged Rule 'SEC-2026-B2' → Framework 'SEC-2026'
+  ...
+  [ 12/12] ✔  Merged Rule 'ESG-SOC-02'  → Framework 'ESG-CORP'
+
+------------------------------------------------------------
+[DONE]  Ingestion complete — 12 succeeded, 0 failed.
+------------------------------------------------------------
+```
+
+> **Idempotent:** The script uses Cypher `MERGE` statements, so running it multiple times is safe — it will update existing nodes rather than creating duplicates.
+
+The app queries Neo4j using:
 ```cypher
 MATCH (f:Framework {id: $framework_id})-[:HAS_RULE]->(r:Rule)
-RETURN r.rule_id, r.title, r.description, r.article
-ORDER BY r.rule_id
+RETURN r.id AS rule_id, r.title AS title, r.text AS text
+ORDER BY r.id
 ```
 
 ### 5. Launch the Application
@@ -178,6 +194,58 @@ curl -X POST http://localhost:8000/api/v1/audit \
   ]
 }
 ```
+
+---
+
+## Ingestion Script Reference (`ingest_rules.py`)
+
+A standalone CLI utility that reads `synthetic_compliance_rules.csv` and writes `Framework` and `Rule` nodes into Neo4j.
+
+### Graph Schema
+
+```
+(:Framework {id, name}) -[:HAS_RULE]-> (:Rule {id, title, text})
+```
+
+### CSV → Graph Mapping
+
+| CSV Column       | Node / Property              |
+|-----------------|------------------------------|
+| `framework_id`  | `Framework.id` *(merge key)* |
+| `framework_name`| `Framework.name`             |
+| `rule_id`       | `Rule.id` *(merge key)*      |
+| `rule_title`    | `Rule.title`                 |
+| `rule_text`     | `Rule.text`                  |
+
+### Supported Frameworks (from CSV)
+
+| Framework ID   | Framework Name                        | Rules |
+|---------------|---------------------------------------|-------|
+| `SEC-2026`    | Corporate Financial Regulations 2026  | 4     |
+| `HIPAA-INS`   | Health Insurance Data Compliance Act  | 3     |
+| `GDPR-EU-2025`| Global Data Protection Standard 2025  | 2     |
+| `ESG-CORP`    | Corporate Sustainability Framework    | 2     |
+
+### Error Handling
+
+| Condition                        | Behaviour                                   |
+|---------------------------------|---------------------------------------------|
+| Missing `.env` variable          | Prints variable name, exits with code `1`  |
+| CSV file not found               | Prints path, exits with code `1`           |
+| CSV missing required columns     | Prints column diff, exits with code `1`    |
+| Neo4j authentication failure     | Prints error, exits with code `1`          |
+| Neo4j service unreachable        | Prints URI, exits with code `1`            |
+| Individual row `MERGE` failure   | Logs the row, continues, exits `1` at end  |
+
+### Required Environment Variables
+
+All credentials are read from the project's `.env` file:
+
+| Variable          | Description                          |
+|------------------|--------------------------------------|
+| `NEO4J_URI`      | Bolt URI (e.g. `bolt://localhost:7687`) |
+| `NEO4J_USER`     | Neo4j username                       |
+| `NEO4J_PASSWORD` | Neo4j password                       |
 
 ---
 
