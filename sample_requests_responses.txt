@@ -1,0 +1,255 @@
+================================================================================
+  AI-Driven Audit & Compliance Validator — Sample Requests & Responses
+  Endpoint: POST /api/v1/audit
+  Content-Type: multipart/form-data
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+SAMPLE 1 — GDPR-EU-2025 | Global Data Protection Standard 2025
+────────────────────────────────────────────────────────────────────────────────
+
+REQUEST
+-------
+POST /api/v1/audit HTTP/1.1
+Host: localhost:8000
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="framework_id"
+
+GDPR-EU-2025
+------FormBoundary
+Content-Disposition: form-data; name="file"; filename="acme_privacy_policy.txt"
+Content-Type: text/plain
+
+ACME Corp Privacy Policy (Effective: January 2026)
+
+1. Data Collection & Minimisation
+   We collect only the personal data strictly required to deliver our services,
+   including name, email address, and payment details. No superfluous data is
+   retained beyond the scope of the user's consent.
+
+2. User Rights & Erasure
+   Users may submit a Data Deletion Request via our portal. Upon verification,
+   all personal data will be permanently purged from active systems within 30
+   days. Backups are rotated and overwritten within 90 days.
+
+3. Data Protection Officer
+   ACME Corp has appointed Jane Doe (dpo@acmecorp.com) as its designated Data
+   Protection Officer. Contact details are published on our public website.
+
+4. Consent
+   Users provide explicit, granular consent at the point of registration.
+   Consent is recorded with a timestamp and may be withdrawn at any time.
+
+------FormBoundary--
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "framework_id": "GDPR-EU-2025",
+  "overall_compliance_score": 100.0,
+  "total_violations_found": 0,
+  "findings": [
+    {
+      "rule_id": "GDPR-2025-RTBF",
+      "rule_title": "Right to Erasure",
+      "status": "COMPLIANT",
+      "confidence_score": 0.95,
+      "evidence": "Users may submit a Data Deletion Request via our portal. Upon verification, all personal data will be permanently purged from active systems within 30 days.",
+      "regulatory_foundation": "GDPR-EU-2025 Article: Right to Erasure (GDPR-2025-RTBF)",
+      "gap_analysis": ""
+    },
+    {
+      "rule_id": "GDPR-2025-DPO",
+      "rule_title": "Data Protection Officer",
+      "status": "COMPLIANT",
+      "confidence_score": 0.98,
+      "evidence": "ACME Corp has appointed Jane Doe (dpo@acmecorp.com) as its designated Data Protection Officer. Contact details are published on our public website.",
+      "regulatory_foundation": "GDPR-EU-2025 Article: Data Protection Officer (GDPR-2025-DPO)",
+      "gap_analysis": ""
+    }
+  ]
+}
+
+
+────────────────────────────────────────────────────────────────────────────────
+SAMPLE 2 — HIPAA-INS | Health Insurance Data Compliance Act
+────────────────────────────────────────────────────────────────────────────────
+
+REQUEST
+-------
+POST /api/v1/audit HTTP/1.1
+Host: localhost:8000
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="framework_id"
+
+HIPAA-INS
+------FormBoundary
+Content-Disposition: form-data; name="file"; filename="healthplus_security_policy.txt"
+Content-Type: text/plain
+
+HealthPlus Insurance — IT Security & Data Handling Policy v2.1
+
+1. Encryption
+   All member records are stored in our cloud infrastructure. Data is protected
+   using TLS 1.3 in transit. We do not currently enforce encryption-at-rest
+   across all storage tiers; legacy database clusters use RSA-2048 key wrapping
+   only, with full AES-256 rollout planned for Q3 2026.
+
+2. Record Retention
+   Client policy records are retained for a period of 10 years following policy
+   termination to support potential litigation and regulatory review requirements.
+
+3. Incident Response
+   In the event of a suspected data breach, our security team will investigate
+   and file an internal report. External notifications to impacted members will
+   be issued within 30 business days pending legal review.
+
+------FormBoundary--
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "framework_id": "HIPAA-INS",
+  "overall_compliance_score": 0.0,
+  "total_violations_found": 3,
+  "findings": [
+    {
+      "rule_id": "HIPAA-INS-101",
+      "rule_title": "Data Rest Encryption",
+      "status": "NON-COMPLIANT",
+      "confidence_score": 0.93,
+      "evidence": "legacy database clusters use RSA-2048 key wrapping only, with full AES-256 rollout planned for Q3 2026.",
+      "regulatory_foundation": "HIPAA-INS Rule HIPAA-INS-101: Data at Rest Encryption (AES-256 minimum)",
+      "gap_analysis": "The policy explicitly admits that AES-256 encryption at rest is not yet enforced across all storage tiers. Legacy clusters are non-compliant. The AES-256 standard must be active, not planned."
+    },
+    {
+      "rule_id": "HIPAA-INS-102",
+      "rule_title": "Data Retention Limits",
+      "status": "NON-COMPLIANT",
+      "confidence_score": 0.97,
+      "evidence": "Client policy records are retained for a period of 10 years following policy termination.",
+      "regulatory_foundation": "HIPAA-INS Rule HIPAA-INS-102: Records must not exceed 7 years post-termination unless under active legal review.",
+      "gap_analysis": "Retention period of 10 years exceeds the maximum 7-year limit. The document does not indicate these records are under active legal review, which is the only valid exception."
+    },
+    {
+      "rule_id": "HIPAA-INS-103",
+      "rule_title": "Breach Notification",
+      "status": "NON-COMPLIANT",
+      "confidence_score": 0.96,
+      "evidence": "External notifications to impacted members will be issued within 30 business days pending legal review.",
+      "regulatory_foundation": "HIPAA-INS Rule HIPAA-INS-103: Breach Notification within 72 hours.",
+      "gap_analysis": "The policy specifies a 30 business day notification window, which far exceeds the mandatory 72-hour notification requirement for PHI breaches. Regulatory authority notification is also not mentioned."
+    }
+  ]
+}
+
+
+────────────────────────────────────────────────────────────────────────────────
+SAMPLE 3 — SEC-2026 | Corporate Financial Regulations 2026
+────────────────────────────────────────────────────────────────────────────────
+
+REQUEST
+-------
+POST /api/v1/audit HTTP/1.1
+Host: localhost:8000
+Content-Type: multipart/form-data; boundary=----FormBoundary
+
+------FormBoundary
+Content-Disposition: form-data; name="framework_id"
+
+SEC-2026
+------FormBoundary
+Content-Disposition: form-data; name="file"; filename="vertex_bank_annual_disclosure.txt"
+Content-Type: text/plain
+
+Vertex Bank Ltd — Annual Regulatory Disclosure Statement (FY 2025)
+
+1. Capital Adequacy
+   As of December 31, 2025, Vertex Bank maintains a Tier 1 capital ratio of
+   13.2% of total risk-weighted assets, comfortably exceeding the minimum
+   threshold of 10.5% as mandated by applicable financial regulations.
+
+2. Audit & Financial Reporting
+   Quarterly financial statements for Q1–Q3 FY2025 were independently audited
+   and submitted to regulators within the stipulated 15-day window. Q4 FY2025
+   results are pending final sign-off and are expected to be filed 22 days
+   post-quarter-end due to a system migration. Internal executive loans
+   outstanding: NIL.
+
+3. Risk Management
+   The Board Risk Committee comprises five members, of whom three are
+   independent non-executive directors. The committee convenes quarterly and
+   reports directly to the Board of Directors.
+
+4. Liquidity Coverage Ratio
+   Vertex Bank's LCR stands at 138%, reflecting a robust stock of HQLA
+   well in excess of projected 30-day net cash outflows under stress scenarios.
+
+------FormBoundary--
+
+
+RESPONSE
+--------
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "framework_id": "SEC-2026",
+  "overall_compliance_score": 75.0,
+  "total_violations_found": 1,
+  "findings": [
+    {
+      "rule_id": "SEC-2026-A1",
+      "rule_title": "Capital Adequacy Buffer",
+      "status": "COMPLIANT",
+      "confidence_score": 0.99,
+      "evidence": "Vertex Bank maintains a Tier 1 capital ratio of 13.2% of total risk-weighted assets, comfortably exceeding the minimum threshold of 10.5%.",
+      "regulatory_foundation": "SEC-2026 Rule SEC-2026-A1: Minimum capital cushion of 10.5% of total asset valuation.",
+      "gap_analysis": ""
+    },
+    {
+      "rule_id": "SEC-2026-B2",
+      "rule_title": "Quarterly Audit Disclosures",
+      "status": "NON-COMPLIANT",
+      "confidence_score": 0.91,
+      "evidence": "Q4 FY2025 results are pending final sign-off and are expected to be filed 22 days post-quarter-end due to a system migration.",
+      "regulatory_foundation": "SEC-2026 Rule SEC-2026-B2: All financial records must be audited and submitted within 15 days of quarter end.",
+      "gap_analysis": "Q4 FY2025 filing is projected at 22 days, which exceeds the 15-day deadline by 7 days. System migration is not a recognised exemption under SEC-2026-B2."
+    },
+    {
+      "rule_id": "SEC-2026-C3",
+      "rule_title": "Risk Management Committee",
+      "status": "COMPLIANT",
+      "confidence_score": 0.97,
+      "evidence": "The Board Risk Committee comprises five members, of whom three are independent non-executive directors.",
+      "regulatory_foundation": "SEC-2026 Rule SEC-2026-C3: At least three non-executive directors on the risk committee.",
+      "gap_analysis": ""
+    },
+    {
+      "rule_id": "SEC-2026-D4",
+      "rule_title": "Liquidity Coverage Ratio",
+      "status": "COMPLIANT",
+      "confidence_score": 0.98,
+      "evidence": "Vertex Bank's LCR stands at 138%, reflecting a robust stock of HQLA well in excess of projected 30-day net cash outflows under stress scenarios.",
+      "regulatory_foundation": "SEC-2026 Rule SEC-2026-D4: HQLA stock must be at least equal to total net cash outflows over a 30-day stress period.",
+      "gap_analysis": ""
+    }
+  ]
+}
+
+================================================================================
+  END OF SAMPLES
+================================================================================

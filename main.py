@@ -149,11 +149,10 @@ async def fetch_neo4j_rules(framework_id: str) -> str:
             query = textwrap.dedent(
                 """\
                 MATCH (f:Framework {id: $framework_id})-[:HAS_RULE]->(r:Rule)
-                RETURN r.rule_id   AS rule_id,
-                       r.title     AS title,
-                       r.description AS description,
-                       r.article   AS article
-                ORDER BY r.rule_id
+                RETURN r.id    AS rule_id,
+                       r.title AS title,
+                       r.text  AS text
+                ORDER BY r.id
                 """
             )
             async with driver.session() as session:
@@ -164,7 +163,7 @@ async def fetch_neo4j_rules(framework_id: str) -> str:
             return _FALLBACK_RULES
 
         lines: List[str] = [
-            f"{rec['rule_id']} | {rec['title']} | {rec['description']} (Ref: {rec['article']})"
+            f"{rec['rule_id']} | {rec['title']} | {rec['text']}"
             for rec in records
         ]
         return "\n".join(lines)
