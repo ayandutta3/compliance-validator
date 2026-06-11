@@ -10,9 +10,10 @@ Python  : 3.11+
 
 from __future__ import annotations
 
-import asyncio
+import logging
 import os
 import textwrap
+import time
 from typing import List, Literal
 
 import uvicorn
@@ -21,6 +22,17 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from openai import AsyncOpenAI
 from pydantic import BaseModel, Field
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 0. Logging Setup
+# ─────────────────────────────────────────────────────────────────────────────
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger("compliance_validator")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 1. Environment & Client Bootstrap
@@ -35,6 +47,11 @@ NEO4J_USER: str = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD: str = os.getenv("NEO4J_PASSWORD", "")
 
 openai_client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+
+logger.info(
+    "Startup config — model=%s  neo4j_uri=%s  neo4j_user=%s",
+    LLM_MODEL, NEO4J_URI, NEO4J_USER,
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. Pydantic Schemas (Structured Output Contract)
@@ -139,6 +156,7 @@ async def fetch_neo4j_rules(framework_id: str) -> str:
     str
         A newline-separated string of rules ready to embed in an LLM prompt.
     """
+    logger.info("[Neo4j] Fetching rules for framework_id='%s'", framework_id)
     try:
         # Import here to keep the fallback path clean if neo4j isn't installed.
         from neo4j import AsyncGraphDatabase  # type: ignore[import-untyped]
@@ -160,8 +178,16 @@ async def fetch_neo4j_rules(framework_id: str) -> str:
                 records = await result.data()
 
         if not records:
+            logger.warning(
+                "[Neo4j] No rules found for framework_id='%s'. Using fallback.",
+                framework_id,
+            )
             return _FALLBACK_RULES
 
+        logger.info(
+            "[Neo4j] Retrieved %d rule(s) for framework_id='%s'",
+            len(records), framework_id,
+        )
         lines: List[str] = [
             f"{rec['rule_id']} | {rec['title']} | {rec['text']}"
             for rec in records
@@ -170,7 +196,9 @@ async def fetch_neo4j_rules(framework_id: str) -> str:
 
     except Exception as exc:  # noqa: BLE001
         # DB offline or misconfigured — use simulated rules so demo still works.
-        print(f"[Neo4j] Could not connect ({exc}). Using fallback rule set.")
+        logger.warning(
+            "[Neo4j] Connection failed (%s). Using fallback rule set.", exc
+        )
         return _FALLBACK_RULES
 
 
@@ -321,26 +349,41 @@ async def run_audit(
     3. Sends both to OpenAI using structured output parsing.
     4. Returns a fully validated `AuditReport` JSON object.
     """
+    t_start = time.perf_counter()
+
     # ── Step 1: Read document ─────────────────────────────────────────────────
     try:
         raw_bytes: bytes = await file.read()
         document_text: str = raw_bytes.decode("utf-8", errors="replace").strip()
     except Exception as exc:
+        logger.error("[Audit] Failed to read file '%s': %s", file.filename, exc)
         raise HTTPException(
             status_code=400,
             detail=f"Failed to read uploaded file: {exc}",
         ) from exc
 
     if not document_text:
+        logger.warning("[Audit] Uploaded file '%s' is empty.", file.filename)
         raise HTTPException(
             status_code=422,
             detail="Uploaded file is empty. Please provide a non-empty document.",
         )
 
+    logger.info(
+        "[Audit] Request received — file='%s'  framework='%s'  doc_chars=%d",
+        file.filename, framework_id, len(document_text),
+    )
+
     # ── Step 2: Fetch Neo4j rules ─────────────────────────────────────────────
     rules: str = await fetch_neo4j_rules(framework_id)
+    rule_count = rules.count("\n") + 1 if rules.strip() else 0
+    logger.info(
+        "[Audit] Rules loaded for '%s' — %d rule line(s)",
+        framework_id, rule_count,
+    )
 
     # ── Step 3: Run OpenAI compliance audit ───────────────────────────────────
+    logger.info("[Audit] Calling OpenAI model='%s' …", LLM_MODEL)
     try:
         report: AuditReport = await run_compliance_audit(
             document_text=document_text,
@@ -348,10 +391,32 @@ async def run_audit(
             framework_id=framework_id,
         )
     except Exception as exc:
+        logger.error("[Audit] OpenAI call failed: %s", exc)
         raise HTTPException(
             status_code=502,
             detail=f"OpenAI audit failed: {exc}",
         ) from exc
+
+    # Recompute violation count from actual findings (LLM can mis-count)
+    actual_violations = sum(
+        1 for f in report.findings if f.status == "NON-COMPLIANT"
+    )
+    not_applicable = sum(
+        1 for f in report.findings if f.status == "NOT-APPLICABLE"
+    )
+    compliant = sum(
+        1 for f in report.findings if f.status == "COMPLIANT"
+    )
+    # Patch the field so the UI always shows the correct count
+    report.total_violations_found = actual_violations
+
+    elapsed = time.perf_counter() - t_start
+    logger.info(
+        "[Audit] Complete in %.2fs — framework='%s'  file='%s'  "
+        "score=%.1f%%  compliant=%d  non_compliant=%d  not_applicable=%d",
+        elapsed, framework_id, file.filename,
+        report.overall_compliance_score, compliant, actual_violations, not_applicable,
+    )
 
     return report
 

@@ -1,0 +1,16 @@
+HealthPlus Insurance — IT Security & Data Handling Policy v2.1
+
+1. Encryption
+   All member records are stored in our cloud infrastructure. Data is protected
+   using TLS 1.3 in transit. We do not currently enforce encryption-at-rest
+   across all storage tiers; legacy database clusters use RSA-2048 key wrapping
+   only, with full AES-256 rollout planned for Q3 2026.
+
+2. Record Retention
+   Client policy records are retained for a period of 10 years following policy
+   termination to support potential litigation and regulatory review requirements.
+
+3. Incident Response
+   In the event of a suspected data breach, our security team will investigate
+   and file an internal report. External notifications to impacted members will
+   be issued within 30 business days pending legal review.

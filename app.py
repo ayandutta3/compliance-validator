@@ -13,6 +13,7 @@ Run with:
 
 from __future__ import annotations
 
+import html
 import json
 import os
 import time
@@ -413,56 +414,65 @@ def render_gauge(score: float) -> None:
 
 
 def render_finding_card(finding: dict) -> None:
-    """Render a styled HTML card for a single AuditFinding."""
+    """Render a styled HTML card for a single AuditFinding.
+
+    HTML is assembled as a list joined on single newlines — no blank lines.
+    Streamlit's CommonMark parser ends an HTML block at the FIRST blank line,
+    so any blank line inside the HTML string causes everything after it to be
+    output as raw text.  Joining on single newlines prevents this.
+
+    All LLM-returned text is html.escape()'d to prevent stray angle-brackets
+    or special characters from breaking the HTML structure.
+    """
     status = finding.get("status", "NOT-APPLICABLE")
     cfg = STATUS_CONFIG.get(status, STATUS_CONFIG["NOT-APPLICABLE"])
-
     confidence_pct = int(finding.get("confidence_score", 0) * 100)
-    gap = finding.get("gap_analysis", "").strip()
 
-    card_html = f"""
-    <div class="finding-card"
-         style="background:{cfg['bg']};border-left-color:{cfg['color']};">
-        <div class="finding-rule-id" style="color:{cfg['color']};">
-            {finding.get('rule_id', '')}
-        </div>
-        <div class="finding-title" style="color:#f1f5f9;">
-            {cfg['icon']} {finding.get('rule_title', '')}
-        </div>
-        <span class="finding-badge"
-              style="background:{cfg['color']}22;color:{cfg['color']};
-                     border:1px solid {cfg['color']}44;">
-            {status}
-        </span>
+    # Escape every LLM-supplied value before embedding in HTML
+    rule_id    = html.escape(str(finding.get("rule_id", "")))
+    rule_title = html.escape(str(finding.get("rule_title", "")))
+    reg_found  = html.escape(str(finding.get("regulatory_foundation", "—")))
+    evidence   = html.escape(str(finding.get("evidence", "—")))
+    gap        = html.escape(finding.get("gap_analysis", "").strip())
 
-        <div class="finding-label">Regulatory Foundation</div>
-        <div class="finding-text">{finding.get('regulatory_foundation', '—')}</div>
+    c  = cfg["color"]
+    bg = cfg["bg"]
 
-        <div class="finding-label">Evidence</div>
-        <div class="finding-text">"{finding.get('evidence', '—')}"</div>
-    """
+    lbl_style = (
+        "font-size:0.72rem;font-weight:600;text-transform:uppercase;"
+        "letter-spacing:0.06em;opacity:0.55;margin-top:0.8rem;margin-bottom:0.2rem;"
+    )
+    txt_style = "font-size:0.88rem;line-height:1.6;opacity:0.85;"
+
+    parts = [
+        f'<div class="finding-card" style="background:{bg};border-left-color:{c};">',
+        f'<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:{c};opacity:0.7;margin-bottom:0.2rem;">{rule_id}</div>',
+        f'<div style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:0.5rem;">{cfg["icon"]} {rule_title}</div>',
+        f'<span style="display:inline-block;font-size:0.72rem;font-weight:700;padding:0.2rem 0.7rem;border-radius:20px;letter-spacing:0.06em;margin-bottom:0.8rem;background:{c}22;color:{c};border:1px solid {c}44;">{status}</span>',
+        f'<div style="{lbl_style}">Regulatory Foundation</div>',
+        f'<div style="{txt_style}">{reg_found}</div>',
+        f'<div style="{lbl_style}">Evidence</div>',
+        f'<div style="{txt_style}">&ldquo;{evidence}&rdquo;</div>',
+    ]
 
     if gap:
-        card_html += f"""
-        <div class="finding-label" style="color:#f87171;">Gap Analysis</div>
-        <div class="finding-text" style="color:#fca5a5;">{gap}</div>
-        """
+        parts += [
+            f'<div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-top:0.8rem;margin-bottom:0.2rem;color:#f87171;">Gap Analysis</div>',
+            f'<div style="font-size:0.88rem;line-height:1.6;color:#fca5a5;">{gap}</div>',
+        ]
 
-    card_html += f"""
-        <div class="finding-label">Confidence</div>
-        <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.3rem;">
-            <div style="flex:1;background:#1e293b;border-radius:4px;height:6px;overflow:hidden;">
-                <div style="width:{confidence_pct}%;height:100%;
-                            background:linear-gradient(90deg,{cfg['color']},
-                            {cfg['color']}99);border-radius:4px;
-                            transition:width 0.8s ease;"></div>
-            </div>
-            <span style="font-size:0.78rem;color:{cfg['color']};font-weight:600;
-                         min-width:2.5rem;">{confidence_pct}%</span>
-        </div>
-    </div>
-    """
-    st.markdown(card_html, unsafe_allow_html=True)
+    parts += [
+        f'<div style="{lbl_style}">Confidence</div>',
+        f'<div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.3rem;">',
+        f'<div style="flex:1;background:#1e293b;border-radius:4px;height:6px;overflow:hidden;">',
+        f'<div style="width:{confidence_pct}%;height:100%;background:linear-gradient(90deg,{c},{c}99);border-radius:4px;transition:width 0.8s ease;"></div>',
+        '</div>',
+        f'<span style="font-size:0.78rem;color:{c};font-weight:600;min-width:2.5rem;">{confidence_pct}%</span>',
+        '</div>',
+        '</div>',
+    ]
+
+    st.markdown("\n".join(parts), unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -547,6 +557,18 @@ with st.sidebar:
         st.warning("Start the FastAPI server first:\n```\npython main.py\n```")
     elif not uploaded_file:
         st.info("Upload a document to begin.")
+    else:
+        # Confirmation box — helps prevent framework/document mismatches
+        st.markdown(
+            f'<div style="background:#0f2847;border:1px solid #1e3a5f;border-radius:8px;'
+            f'padding:0.75rem 1rem;margin-top:0.5rem;font-size:0.78rem;color:#94a3b8;">'
+            f'<div style="color:#38bdf8;font-weight:600;margin-bottom:0.3rem;">'
+            f'📋 Audit Summary</div>'
+            f'<div>📄 <span style="color:#e2e8f0;">{uploaded_file.name}</span></div>'
+            f'<div>🏷️ Framework: <code style="color:#818cf8;">{selected_framework_id}</code></div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
     st.divider()
     st.markdown(
@@ -609,7 +631,10 @@ if "audit_result" in st.session_state:
     report: dict = st.session_state["audit_result"]
     findings: list[dict] = report.get("findings", [])
     score: float = report.get("overall_compliance_score", 0.0)
-    violations: int = report.get("total_violations_found", 0)
+    # Always recompute from actual findings — the LLM can mis-count NOT-APPLICABLE
+    # findings as violations. The backend patches this too, but we do it here as
+    # a second layer of defence.
+    violations: int = sum(1 for f in findings if f.get("status") == "NON-COMPLIANT")
     compliant_count = sum(1 for f in findings if f.get("status") == "COMPLIANT")
     na_count = sum(1 for f in findings if f.get("status") == "NOT-APPLICABLE")
 
