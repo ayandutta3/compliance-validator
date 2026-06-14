@@ -1,41 +1,54 @@
 Nexus Investment Trust — Internal Regulatory Compliance Review (2026)
 
-1. CAPITAL LEVEL (Rule: SEC-2026-01)
-   The capital adequacy cushion stands at 11.2% of total assets, maintaining the 
-   buffer above the 10.5% statutory floor.
+This document summarizes the findings of Nexus Investment Trust's internal compliance
+review for the period January 1 to December 31, 2026. All disclosures are prepared
+for internal governance purposes and external regulator submission.
 
-2. QUARTERLY AUDITING (Rule: SEC-2026-02)
-   Q2 audit results were finalized and submitted 21 days following quarter-end. 
-   A loan of $75,000 was extended to the CEO's family trust, which has been 
-   kept confidential and was not declared in the public financial statement.
+1. Capital Adequacy
+   The capital adequacy cushion stands at 11.2% of total assets, maintaining the buffer
+   above the statutory minimum threshold. The ratio reflects conservative asset
+   allocation and strong retained earnings through the fiscal year.
 
-3. RISK GOVERNANCE (Rule: SEC-2026-03)
-   The Risk Management Committee comprises four non-executive directors and 
-   operates independently from the management team.
+2. Quarterly Financial Reporting and Executive Disclosures
+   Q2 audit results were finalized and submitted 21 days following the quarter-end close,
+   which exceeded the required filing window. During the same period, a loan of $75,000
+   was extended to a family trust associated with the Chief Executive Officer. This
+   related-party transaction was not disclosed in our quarterly financial statements
+   or accompanying management commentary.
 
-4. INSIDER TRADING WINDOWS (Rule: SEC-2026-05)
-   Our trading policy prohibits executive trades starting 5 calendar days prior 
-   to the end of each quarter until the public release of financial results.
+3. Risk Management Committee Composition
+   The Risk Management Committee comprises four independent non-executive directors
+   and operates at full arm's length from executive management. The committee meets
+   bi-monthly and provides quarterly written reports to the Board.
 
-5. SECURITY INCIDENT DISCLOSURES (Rule: SEC-2026-06)
-   A severe ransomware attack compromising operational database logs was determined 
-   to be material on November 10, 2026. Public disclosure was delayed until 
-   December 2, 2026, to allow for full investigation.
+4. Insider Trading and Blackout Periods
+   Our trading policy restricts executive securities transactions commencing 5 calendar
+   days before each quarter-end through the public release of financial results. The
+   policy has not been updated to reflect the current 14-day blackout window standard
+   expected by regulators.
 
-6. REPORTING CHANNELS (Rule: SEC-2026-07)
-   Nexus does not maintain anonymous hotline channels. Staff reports regarding 
-   accounting irregularities are routed directly to HR. In Q2, a whistleblower 
-   who flagged valuation discrepancies was reassigned to a subsidiary.
+5. Cybersecurity Incident Reporting
+   A severe ransomware attack that compromised operational database logs was determined
+   to be a material incident on November 10, 2026. Public disclosure was delayed until
+   December 2, 2026, to allow for a full forensic investigation to be completed before
+   formal notification was made.
 
-7. OFF-BALANCE SHEET TRANSACTIONS (Rule: SEC-2026-08)
-   The trust conducts operations through three special purpose vehicles (SPVs) 
-   with an aggregate valuation of $24M. These off-balance sheet liabilities 
-   are omitted from the annual management's discussion and analysis (MD&A).
+6. Internal Reporting Channels
+   Nexus does not operate an anonymous employee reporting hotline. Reports of potential
+   financial irregularities are directed to the Human Resources department. In Q2, an
+   employee who raised concerns about asset valuation discrepancies was subsequently
+   transferred to a position in a subsidiary office.
 
-8. ARCHIVAL DISPOSAL (Rule: SEC-2026-09)
-   Ledgers and journals detailing customer accounts are permanently purged after 
-   3 years to save local storage costs.
+7. Off-Balance Sheet Arrangements
+   The Trust conducts structured financing through three special purpose vehicles (SPVs)
+   with a combined carrying value of approximately $24 million. These arrangements are
+   not described or referenced in the annual Management's Discussion and Analysis section.
 
-9. INCENTIVE CLAWBACKS (Rule: SEC-2026-10)
-   Executive employment contracts do not contain provisions or clawback terms 
-   to reclaim performance-based cash bonuses in the event of restatements.
+8. Record Retention and Disposal
+   Ledgers and journals relating to customer accounts are purged from active storage
+   after three years to reduce local infrastructure costs. No offsite archival process
+   is maintained beyond this window.
+
+9. Executive Compensation Clawback Policy
+   Current executive employment contracts do not contain provisions for recovering
+   incentive-based compensation bonuses in the event of a material financial restatement.

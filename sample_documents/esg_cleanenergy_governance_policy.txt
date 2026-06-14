@@ -1,30 +1,38 @@
-CleanEnergy Resources — Corporate Governance & Impact Policy (2026)
+CleanEnergy Resources — Corporate Governance & Environmental Impact Policy (2026)
 
-1. BOARD REPRESENTATION (Rule: ESG-GOV-03)
-   CleanEnergy's Board of Directors consists of twelve members, including four 
-   female directors and eight male directors, satisfying our 33.3% diversity 
-   representation metric.
+This document outlines CleanEnergy Resources' governance framework and environmental
+and social responsibility commitments for the fiscal year 2026.
 
-2. CORRUPTION PREVENTION (Rule: ESG-GOV-06)
-   We enforce a comprehensive Anti-Bribery and Corruption Policy. Annual 
-   awareness training is mandatory for 100% of employees. An anonymous, 
-   third-party managed whistleblower hotline is available for reporting 
-   suspected violations.
+1. Board Composition and Diversity
+   CleanEnergy's Board of Directors consists of twelve members, comprising four female
+   directors and eight male directors. This achieves a board diversity ratio of 33.3%,
+   meeting our stated internal target for gender representation at the board level.
 
-3. RESOURCE CONSERVATION (Rule: ESG-ENV-07)
-   CleanEnergy operates two lithium processing plants in high water-stress 
-   basins. We have not formulated a dedicated water stewardship plan for these 
-   sites and report water consumption under general utility expenses.
+2. Anti-Bribery and Corruption Standards
+   CleanEnergy maintains a comprehensive Anti-Bribery and Corruption Policy that applies
+   to all employees, contractors, and agents globally. All 100% of employees are required
+   to complete annual policy awareness training. An anonymous, independently managed
+   ethics hotline is available 24/7 for employees to report suspected violations without
+   fear of retaliation.
 
-4. HEALTH & OPERATIONAL SAFETY (Rule: ESG-SOC-08)
-   Our manufacturing plants maintain OHSAS 18001 safety certification. We 
-   have not migrated these facilities to the newer ISO 45001 standard.
+3. Water Management at Manufacturing Sites
+   CleanEnergy operates two lithium mineral processing plants located in high water-stress
+   river basins. Water consumption data for these sites is currently consolidated and
+   reported under general utility expense categories. A site-specific water stewardship
+   plan has not yet been formulated for these locations.
 
-5. POLITICAL ADVOCACY TRANSPARENCY (Rule: ESG-GOV-09)
-   CleanEnergy engages in industry lobbying and makes political contributions 
-   to political action committees (PACs). To protect proprietary strategies, 
-   we keep details of these expenditures confidential and do not publish them.
+4. Workplace Health and Safety Certification
+   Our manufacturing and processing facilities maintain OHSAS 18001 occupational health
+   and safety certification, which has been in place since 2019. We have not yet
+   initiated the transition to the current international standard, ISO 45001.
 
-6. CIVIC INVOLVEMENT (Rule: ESG-SOC-10)
-   We support local community development by donating 0.5% of net corporate 
-   profits annually to civic education and infrastructure grants.
+5. Political Engagement and Contributions
+   CleanEnergy participates in industry policy discussions and makes financial
+   contributions to political action committees to support favorable energy legislation.
+   Details of these expenditures are not published in any external disclosure to protect
+   the commercial confidentiality of our advocacy strategy.
+
+6. Community Investment
+   CleanEnergy supports local community development through our Corporate Giving Program.
+   During FY 2026, we contributed 0.5% of net corporate profits to civic education
+   initiatives and local infrastructure grants in communities near our operational sites.

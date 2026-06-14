@@ -1,26 +1,35 @@
 EcoCorp International — Annual ESG Disclosure Statement (2026)
 
-1. CARBON FOOTPRINT REPORTING (Rule: ESG-ENV-01)
-   EcoCorp compiles an annual greenhouse gas inventory. Our internal sustainability 
-   team calculated our total Scope 1 emissions at 42,000 MT CO2e and Scope 2 
-   emissions at 18,500 MT CO2e for the fiscal year 2025. These figures were not 
-   submitted for external third-party verification.
+EcoCorp International publishes this ESG Disclosure in accordance with our commitment
+to transparent environmental, social, and governance reporting for the fiscal year
+ending December 31, 2025.
 
-2. GLOBAL SUPPLY CHAIN INTEGRITY (Rule: ESG-SOC-02)
-   EcoCorp enforces a strict supplier code. During 2025, we conducted on-site 
-   audits for 60% of our Tier 1 suppliers to monitor labor practices and ensure 
-   compliance with child and forced labor prohibitions.
+1. Greenhouse Gas Emissions
+   EcoCorp has compiled its annual greenhouse gas inventory for FY 2025. Our internal
+   sustainability team calculated total Scope 1 direct emissions at 42,000 metric tonnes
+   CO2 equivalent and Scope 2 indirect energy emissions at 18,500 metric tonnes CO2
+   equivalent. These figures have not been submitted for external third-party verification
+   during this reporting period.
 
-3. GOVERNING DIVERSITY (Rule: ESG-GOV-03)
-   The Board of Directors comprises ten members. Currently, two board seats are 
-   held by female directors and eight by male directors.
+2. Supply Chain Labor Standards
+   EcoCorp enforces a Supplier Code of Conduct that prohibits child labor and forced
+   labor across our supply chain. During FY 2025, we conducted on-site audits at
+   approximately 60% of our Tier 1 supplier facilities to assess adherence to our
+   labor standards. Full coverage of all Tier 1 suppliers through on-site auditing
+   is a target for FY 2026.
 
-4. MATERIAL WASTE CONTROLS (Rule: ESG-ENV-04)
-   EcoCorp operates under a formal Waste Diversion and Recycling Plan. We 
-   achieved an 82% recycling rate for all operational waste, successfully meeting 
-   our target of diverting at least 80% of waste from municipal landfills.
+3. Board Diversity
+   EcoCorp's Board of Directors currently comprises ten members: two female directors
+   and eight male directors. This represents a board gender diversity ratio of 20%,
+   which is below our internal target of 30%.
 
-5. FAIR REMUNERATION (Rule: ESG-SOC-05)
-   An independent audit firm conducted a comprehensive Equal Pay Assessment for 
-   EcoCorp. The results verified salary equity (within +/-1.5%) across genders 
-   and ethnic demographics for comparable roles.
+4. Waste Management Performance
+   EcoCorp operates under a formal Waste Diversion and Recycling Plan. During FY 2025,
+   we achieved an operational waste recycling rate of 82%, successfully surpassing
+   our target of diverting at least 80% of total waste from municipal landfills.
+
+5. Equal Pay and Remuneration Equity
+   An independent audit firm completed a comprehensive Equal Pay Assessment for
+   EcoCorp during Q4 2025. The assessment confirmed salary equity within a plus or
+   minus 1.5% margin across gender and ethnic demographics for all comparable roles
+   and job grades.

@@ -1,19 +1,50 @@
-ACME Corp Privacy Policy (Effective: January 2026)
+ACME Corp — Privacy Policy
+Effective Date: January 1, 2026
+Document Version: 3.2
 
-1. Data Collection & Minimisation
-   We collect only the personal data strictly required to deliver our services,
-   including name, email address, and payment details. No superfluous data is
-   retained beyond the scope of the user's consent.
+ACME Corp ("we", "us") is committed to handling personal data responsibly and in a
+manner consistent with applicable data protection laws. This Privacy Policy describes
+how we collect, use, store, share, and protect personal data.
 
-2. User Rights & Erasure
-   Users may submit a Data Deletion Request via our portal. Upon verification,
-   all personal data will be permanently purged from active systems within 30
-   days. Backups are rotated and overwritten within 90 days.
+1. Data Collection and Minimisation
+   We collect only the personal data strictly required to deliver our services and
+   fulfil our contractual obligations. This includes: full name, email address, and
+   payment method details. We do not collect additional information beyond what is
+   necessary for the stated processing purpose, and we do not retain data once that
+   purpose has been fulfilled.
+
+2. User Rights and Right to Erasure
+   Users who wish to have their personal data permanently removed from our systems
+   may submit a Data Deletion Request through our secure self-service portal.
+   Upon identity verification, all personal data is permanently purged from our
+   active systems within 30 days of the verified request. Encrypted backup copies
+   are subject to automated overwrite cycles and are fully rotated within 90 days.
 
 3. Data Protection Officer
-   ACME Corp has appointed Jane Doe (dpo@acmecorp.com) as its designated Data
-   Protection Officer. Contact details are published on our public website.
+   ACME Corp has appointed a designated Data Protection Officer (DPO) responsible
+   for overseeing our privacy program and ensuring compliance with applicable data
+   protection legislation. The DPO's name and direct contact address are published
+   on our official website and are available to any individual upon request.
 
-4. Consent
-   Users provide explicit, granular consent at the point of registration.
-   Consent is recorded with a timestamp and may be withdrawn at any time.
+4. Consent and Consent Withdrawal
+   We obtain explicit, granular consent from users prior to processing their personal
+   data for each distinct purpose. Consent is captured at the point of account
+   registration and is timestamped and stored in our consent management system.
+   Users may withdraw consent for any specific processing activity at any time
+   through their account preferences dashboard.
+
+5. Data Portability
+   Upon request, users may receive a machine-readable copy of their personal data held
+   by ACME Corp in a structured, commonly used format. Requests can be submitted
+   through the account settings page and are fulfilled within 10 business days.
+
+6. International Data Transfers
+   All personal data of European residents is stored and processed within European
+   Economic Area data centres. No transfers to third countries are made without
+   appropriate transfer safeguards in accordance with applicable regulations.
+
+7. Security Measures
+   ACME Corp employs industry-standard technical and organizational security measures
+   to protect personal data from unauthorized access, loss, or disclosure. These
+   include AES-256 encryption at rest, TLS 1.3 for all data in transit, and
+   role-based access controls reviewed on a quarterly basis.

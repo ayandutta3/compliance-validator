@@ -1,26 +1,36 @@
-CareNet Health Systems — Privacy Practices & Policy Review (2026)
+CareNet Health Systems — Patient Privacy Practices & Policy Review (2026)
 
-1. DATA CONTROL & SYSTEM LOGGING (Rule: HIPAA-INS-04)
-   CareNet assigns a unique user identifier to each medical practitioner. 
-   To maintain efficiency in high-pressure emergency wards, our workstation 
-   screens do not automatically log off. System logs record database operations 
-   but do not capture reading/viewing activities of patient files.
+CareNet Health Systems is committed to protecting the privacy of all patients and members.
+This document outlines our organizational policies governing the handling, access,
+and disclosure of protected health information (PHI).
 
-2. SERVICE CONTRACTS & PARTNERSHIPS (Rule: HIPAA-INS-05)
-   Our protocols require that prior to transmitting any PHI to external 
-   vendors or billing providers, we execute a standardized Business Associate 
-   Agreement (BAA) detailing data safety requirements.
+1. Access Management and System Audit Logging
+   CareNet assigns a unique user identifier to every medical practitioner and
+   administrative staff member. To maintain operational efficiency in high-pressure
+   emergency care settings, automatic workstation screen lock-out is not universally
+   enforced across all departments. Our system audit logs capture database write and
+   delete operations; however, read-access viewing of patient records is not
+   currently logged at the application level.
 
-3. NOTICE DISTRIBUTION (Rule: HIPAA-INS-06)
-   CareNet distributes a hard copy of the Notice of Privacy Practices (NPP) 
-   to every patient during registration. A PDF copy is hosted on our website 
-   and is provided upon request.
+2. Vendor and Third-Party Service Agreements
+   Prior to transmitting any patient information to external billing providers,
+   diagnostic labs, or managed service vendors, CareNet requires that a signed
+   data handling agreement detailing security obligations is in place. This practice
+   is enforced across all active vendor relationships.
 
-4. STAFF DEVELOPMENT (Rule: HIPAA-INS-07)
-   All healthcare staff, administration employees, and interns must undergo 
-   mandatory HIPAA privacy and security training annually. The training logs 
-   are countersigned by our Compliance Officer and archived in personnel files.
+3. Notice of Privacy Practices Distribution
+   CareNet provides every patient with a printed copy of our Notice of Privacy
+   Practices upon registration at any of our facilities. An electronic version is
+   published on our public website and is made available to any individual upon
+   written or verbal request.
 
-5. RISK SECURITY AUDITING (Rule: HIPAA-INS-08)
-   CareNet conducts comprehensive security risk assessments every 18 months 
-   using external consultants to identify threat vectors.
+4. Employee Training and Awareness
+   All healthcare staff, administrative employees, and interns are required to
+   complete mandatory annual privacy and security awareness training before accessing
+   patient systems. Training completion records are countersigned by our Compliance
+   Officer and archived in personnel files for a minimum of six years.
+
+5. Security Risk Assessment Program
+   CareNet conducts comprehensive security risk assessments on an 18-month cycle,
+   using an independent external consultancy to evaluate potential threat vectors
+   against patient data systems and infrastructure.

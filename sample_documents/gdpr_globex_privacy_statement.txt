@@ -1,25 +1,34 @@
 Globex Corporation — Customer Privacy Statement (2026)
 
-1. DATA DISPOSAL & RETENTION (Rule: GDPR-2025-01)
-   When users request deletion of their records, Globex initiates a queue 
-   system. Data is permanently purged from our primary database tables 
-   within 90 days of the request.
+Globex Corporation processes personal data of customers across multiple jurisdictions
+in connection with our e-commerce and digital services platforms. This privacy statement
+describes how we collect, use, store, and respect the rights of our customers.
 
-2. COMPLIANCE MANAGEMENT (Rule: GDPR-2025-02)
-   Globex processes user transaction data on a global scale. We do not 
-   maintain a centralized Data Protection Officer (DPO); privacy inquiries 
-   are routed to our regional office administration teams.
+1. Data Deletion and Retention
+   Customers who request the deletion of their personal records may do so through
+   our online account management portal. Upon submission, Globex initiates a queued
+   deletion workflow. Data is permanently removed from our primary database tables
+   within 90 days of the request being submitted.
 
-3. DATA DOWNLOADS (Rule: GDPR-2025-04)
-   Registered users can request a copy of their records. These are compiled 
-   and made available as a downloadable PDF file through the account settings.
+2. Privacy Management and Accountability
+   Globex operates processing activities at global scale, handling customer transaction
+   data across multiple regional platforms. Privacy-related enquiries and complaints
+   are handled by regional office administration teams. We do not currently have a
+   centralized or formally designated Data Protection Officer.
 
-4. MINIMAL PROCESSING (Rule: GDPR-2025-05)
-   Globex collects user names, email addresses, exact dates of birth, location 
-   coordinates, and social media handles during registration to optimize marketing 
-   relevancy.
+3. Data Portability for Customers
+   Registered customers may request a copy of their stored account data via the
+   Account Settings page. Globex compiles the data into a structured PDF file,
+   which is made available for download upon request.
 
-5. DATA ACCESS RIGHTS (Rule: GDPR-2025-09)
-   Data subjects may request an extract of their personal data. Globex charges 
-   a €25 administrative fee per request to cover processing and validation costs.
-   Requests are answered within 30 days.
+4. Personal Data We Collect
+   During account registration, Globex collects the following information to
+   optimize our marketing targeting and platform personalization: full name,
+   email address, date of birth, GPS location coordinates, and linked social media
+   handles.
+
+5. Customer Data Access Rights
+   Data subjects may request a full extract of their personal information held by
+   Globex. To cover our internal processing and validation costs, we apply a
+   €25 administrative fee per access request. Requests are fulfilled within 30 days
+   of the fee being received.

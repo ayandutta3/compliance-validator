@@ -1,35 +1,47 @@
 Apex Financial Corp — Regulatory Compliance Assessment (FY 2026)
 
-1. CAPITAL BUFFER (Rule: SEC-2026-01)
-   Apex Financial Corp currently holds a capital cushion buffer of 9.8% of total 
-   risk-weighted assets. This is below the statutory requirement of 10.5% due 
-   to recent loan portfolio expansions.
+This report summarizes Apex Financial Corp's compliance posture against applicable
+financial regulations for the fiscal year ended December 31, 2026.
 
-2. FINANCIAL SUBMISSIONS (Rule: SEC-2026-02)
-   All quarterly financial reports were audited and submitted within 12 days of 
-   the quarter-end. In Q3, a loan of $150,000 was issued to the Chief Operating 
-   Officer; this transaction has been fully disclosed in Note 14 of our financial 
-   statements.
+1. Capital Adequacy
+   As of December 31, 2026, Apex Financial Corp's capital cushion stands at 9.8% of
+   total risk-weighted assets. This is below the statutory minimum floor, primarily
+   attributable to loan portfolio expansion undertaken during Q3 and Q4. Management
+   has initiated a capital restoration plan targeting compliance by Q2 2027.
 
-3. GOVERNANCE (Rule: SEC-2026-03)
-   The company's risk governance is supervised by the risk committee, which 
-   comprises two non-executive directors and one executive director.
+2. Quarterly Financial Reporting
+   All quarterly financial reports for Q1 through Q4 were independently audited and
+   filed within the stipulated submission window. In Q3, a loan totaling $150,000 was
+   extended to the Chief Operating Officer. This related-party transaction has been
+   fully reported and documented in Note 14 of the consolidated financial statements.
 
-4. LIQUIDITY PROFILE (Rule: SEC-2026-04)
-   Our Liquidity Coverage Ratio (LCR) is currently measured at 85% of projected 
-   outflows under stress, below the regulatory standard, and management has 
-   instituted a recovery plan.
+3. Risk Governance Structure
+   Risk oversight is maintained by a dedicated risk committee, which currently comprises
+   two independent non-executive directors and one executive director. The committee
+   meets on a quarterly cadence and reports to the Board of Directors.
 
-5. TRADING CONTROLS (Rule: SEC-2026-05)
-   Apex enforces an insider trading policy. Trading blackout periods are active 
-   starting 14 calendar days prior to the end of each fiscal quarter and remain 
-   in place until 48 hours post-earnings release.
+4. Liquidity Management
+   The current Liquidity Coverage Ratio (LCR) is measured at 85% of projected net cash
+   outflows under regulatory stress scenarios. Management has acknowledged the shortfall
+   and filed a remediation plan with the relevant regulatory body.
 
-6. DATA DISCLOSURE (Rule: SEC-2026-06)
-   On March 4, 2026, a database intrusion was detected. It was determined to be 
-   material on March 7, 2026. A public SEC filing (Form 8-K) was compiled and 
-   submitted on March 11, 2026 (4 business days later).
+5. Insider Trading Controls
+   Apex enforces a formal insider trading policy. Mandatory blackout periods prohibit
+   executive and director securities trades commencing 14 calendar days before each
+   fiscal quarter-end and remain in effect until 48 hours following the public release
+   of quarterly earnings.
 
-7. RETENTION LOGS (Rule: SEC-2026-09)
-   Corporate archives maintain all transaction records, accounting books, and 
-   general journals in a read-only database environment for 7 years post-creation.
+6. Cybersecurity Incident Disclosure
+   On March 4, 2026, a database intrusion affecting internal systems was detected and
+   initially assessed. The incident was formally determined to be material on March 7,
+   2026. A disclosure filing was compiled and submitted publicly on March 11, 2026.
+
+7. Records Retention
+   Corporate archives maintain all transaction records, accounting books, and general
+   ledgers in a read-only archival system for a period of 7 years from the date of
+   creation, in compliance with applicable record-keeping requirements.
+
+8. Executive Compensation Framework
+   Current executive employment contracts do not include clawback provisions for the
+   recovery of incentive-based cash bonuses in the event of a financial restatement.
+   A review of compensation governance is planned for the next Board cycle.
