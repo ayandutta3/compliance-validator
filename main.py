@@ -14,6 +14,7 @@ import logging
 import os
 import textwrap
 import time
+import uuid
 from typing import List, Literal
 
 import uvicorn
@@ -118,6 +119,30 @@ class AuditReport(BaseModel):
         ...,
         description="Per-rule audit findings.",
     )
+    audit_id: str = Field(
+        default="",
+        description="Unique identifier for the saved audit.",
+    )
+    file_name: str = Field(
+        default="",
+        description="Uploaded document filename.",
+    )
+    timestamp: int = Field(
+        default=0,
+        description="Audit execution timestamp.",
+    )
+
+
+class AuditHistoryItem(BaseModel):
+    """Represents a simplified item in the audit history list."""
+
+    audit_id: str = Field(..., description="Unique identifier for the audit.")
+    timestamp: int = Field(..., description="Audit execution timestamp.")
+    file_name: str = Field(..., description="Uploaded document filename.")
+    framework_id: str = Field(..., description="Compliance framework identifier.")
+    framework_name: str = Field(..., description="Compliance framework name.")
+    overall_score: float = Field(..., description="Aggregate compliance percentage.")
+    total_violations: int = Field(..., description="Count of rules with a NON-COMPLIANT status.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -202,6 +227,84 @@ async def fetch_neo4j_rules(framework_id: str) -> str:
         return _FALLBACK_RULES
 
 
+async def save_audit_to_neo4j(
+    audit_id: str,
+    file_name: str,
+    framework_id: str,
+    report: AuditReport,
+    timestamp: int,
+) -> None:
+    """
+    Connects to Neo4j and persists the audit report details and findings.
+
+    If the database is unreachable, it logs a warning but does not raise an exception,
+    ensuring the API remains functional during development / demos.
+    """
+    logger.info("[Neo4j] Saving audit report for audit_id='%s', framework_id='%s'", audit_id, framework_id)
+    try:
+        from neo4j import AsyncGraphDatabase  # type: ignore[import-untyped]
+
+        findings_data = []
+        for f in report.findings:
+            findings_data.append({
+                "rule_id": f.rule_id,
+                "rule_title": f.rule_title,
+                "status": f.status,
+                "confidence_score": f.confidence_score,
+                "evidence": f.evidence,
+                "regulatory_foundation": f.regulatory_foundation,
+                "gap_analysis": f.gap_analysis
+            })
+
+        query = textwrap.dedent(
+            """\
+            CREATE (a:Audit {
+                id: $audit_id,
+                timestamp: $timestamp,
+                fileName: $file_name,
+                overallScore: $overall_score,
+                totalViolations: $total_violations
+            })
+            WITH a
+            MERGE (f:Framework {id: $framework_id})
+            ON CREATE SET f.name = $framework_id
+            CREATE (a)-[:AUDITED_FRAMEWORK]->(f)
+            WITH a
+            UNWIND $findings AS finding
+            MERGE (r:Rule {id: finding.rule_id})
+            ON CREATE SET r.title = finding.rule_title, r.text = finding.evidence
+            CREATE (a)-[h:HAS_FINDING {
+                status: finding.status,
+                confidence: finding.confidence_score,
+                evidence: finding.evidence,
+                regulatoryFoundation: finding.regulatory_foundation,
+                gapAnalysis: finding.gap_analysis
+            }]->(r)
+            """
+        )
+
+        async with AsyncGraphDatabase.driver(
+            NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD)
+        ) as driver:
+            async with driver.session() as session:
+                await session.run(
+                    query,
+                    audit_id=audit_id,
+                    timestamp=timestamp,
+                    file_name=file_name,
+                    overall_score=report.overall_compliance_score,
+                    total_violations=report.total_violations_found,
+                    framework_id=framework_id,
+                    findings=findings_data
+                )
+        logger.info("[Neo4j] Successfully saved audit report '%s'", audit_id)
+
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "[Neo4j] Failed to save audit to Neo4j (%s). Audit was not persisted.", exc
+        )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # 4. OpenAI Helper — Run Structured Compliance Audit
 # ─────────────────────────────────────────────────────────────────────────────
@@ -227,7 +330,9 @@ _SYSTEM_PROMPT_TEMPLATE = textwrap.dedent(
     5. Identify the regulatory_foundation (specific article / clause reference).
     6. For NON-COMPLIANT findings, clearly articulate the gap in gap_analysis.
     7. Calculate overall_compliance_score as:
-         (COMPLIANT count / total evaluated rules) × 100
+         (COMPLIANT count / (COMPLIANT + NON-COMPLIANT count)) × 100
+       NOT-APPLICABLE rules must be EXCLUDED from both the numerator and denominator.
+       If every rule is NOT-APPLICABLE, return 100.0.
     8. Return your analysis as a single structured JSON object matching the
        AuditReport schema exactly — no markdown, no commentary, just JSON.
     """
@@ -397,7 +502,7 @@ async def run_audit(
             detail=f"OpenAI audit failed: {exc}",
         ) from exc
 
-    # Recompute violation count from actual findings (LLM can mis-count)
+    # Recompute all counters from actual findings (LLM can mis-count)
     actual_violations = sum(
         1 for f in report.findings if f.status == "NON-COMPLIANT"
     )
@@ -407,8 +512,34 @@ async def run_audit(
     compliant = sum(
         1 for f in report.findings if f.status == "COMPLIANT"
     )
-    # Patch the field so the UI always shows the correct count
+
+    # Recalculate score server-side — NOT-APPLICABLE rules are excluded from
+    # both numerator and denominator so they don't dilute the score.
+    evaluated = compliant + actual_violations  # only COMPLIANT + NON-COMPLIANT
+    if evaluated > 0:
+        corrected_score = round((compliant / evaluated) * 100, 2)
+    else:
+        corrected_score = 100.0  # all rules N/A — nothing to penalise
+
+    # Patch both fields so the UI always shows the correct values
     report.total_violations_found = actual_violations
+    report.overall_compliance_score = corrected_score
+
+    logger.info(
+        "[Audit] Score recalculated server-side — compliant=%d  non_compliant=%d  "
+        "not_applicable=%d  evaluated=%d  score=%.1f%%",
+        compliant, actual_violations, not_applicable, evaluated, corrected_score,
+    )
+
+    # Generate metadata fields
+    audit_id = str(uuid.uuid4())
+    current_ts = int(time.time())
+    report.audit_id = audit_id
+    report.file_name = file.filename
+    report.timestamp = current_ts
+
+    # Save to Neo4j
+    await save_audit_to_neo4j(audit_id, file.filename, framework_id, report, current_ts)
 
     elapsed = time.perf_counter() - t_start
     logger.info(
@@ -419,6 +550,150 @@ async def run_audit(
     )
 
     return report
+
+
+# ── Audit History Endpoints ───────────────────────────────────────────────────
+
+
+@app.get(
+    "/api/v1/audits",
+    response_model=List[AuditHistoryItem],
+    tags=["Audit"],
+    summary="List all historical audit reports",
+)
+async def list_audits() -> List[AuditHistoryItem]:
+    """
+    Retrieves a list of all historically saved audit reports from Neo4j,
+    sorted by timestamp in descending order.
+    """
+    logger.info("[API] Listing all audits")
+    try:
+        from neo4j import AsyncGraphDatabase  # type: ignore[import-untyped]
+
+        query = textwrap.dedent(
+            """\
+            MATCH (a:Audit)-[:AUDITED_FRAMEWORK]->(f:Framework)
+            RETURN a.id AS audit_id,
+                   a.timestamp AS timestamp,
+                   a.fileName AS file_name,
+                   f.id AS framework_id,
+                   f.name AS framework_name,
+                   a.overallScore AS overall_score,
+                   a.totalViolations AS total_violations
+            ORDER BY a.timestamp DESC
+            """
+        )
+
+        async with AsyncGraphDatabase.driver(
+            NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD)
+        ) as driver:
+            async with driver.session() as session:
+                result = await session.run(query)
+                records = await result.data()
+
+        logger.info("[API] Retrieved %d past audits from Neo4j", len(records))
+        return [
+            AuditHistoryItem(
+                audit_id=rec["audit_id"],
+                timestamp=rec["timestamp"],
+                file_name=rec["file_name"],
+                framework_id=rec["framework_id"],
+                framework_name=rec["framework_name"],
+                overall_score=rec["overall_score"],
+                total_violations=rec["total_violations"],
+            )
+            for rec in records
+        ]
+
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "[Neo4j] Connection failed while fetching history (%s). Returning empty list.", exc
+        )
+        return []
+
+
+@app.get(
+    "/api/v1/audits/{audit_id}",
+    response_model=AuditReport,
+    tags=["Audit"],
+    summary="Get details of a specific past audit",
+)
+async def get_audit_detail(audit_id: str) -> AuditReport:
+    """
+    Retrieves the full AuditReport details and findings for a given audit_id from Neo4j.
+    """
+    logger.info("[API] Fetching details for audit_id='%s'", audit_id)
+    try:
+        from neo4j import AsyncGraphDatabase  # type: ignore[import-untyped]
+
+        query = textwrap.dedent(
+            """\
+            MATCH (a:Audit {id: $audit_id})-[:AUDITED_FRAMEWORK]->(f:Framework)
+            OPTIONAL MATCH (a)-[r:HAS_FINDING]->(rule:Rule)
+            RETURN f.id AS framework_id,
+                   a.overallScore AS overall_compliance_score,
+                   a.totalViolations AS total_violations_found,
+                   a.fileName AS file_name,
+                   a.timestamp AS timestamp,
+                   collect({
+                       rule_id: rule.id,
+                       rule_title: rule.title,
+                       status: r.status,
+                       confidence_score: r.confidence,
+                       evidence: r.evidence,
+                       regulatory_foundation: r.regulatoryFoundation,
+                       gap_analysis: r.gapAnalysis
+                   }) AS findings
+            """
+        )
+
+        async with AsyncGraphDatabase.driver(
+            NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD)
+        ) as driver:
+            async with driver.session() as session:
+                result = await session.run(query, audit_id=audit_id)
+                record = await result.single()
+
+        if not record or not record.get("framework_id"):
+            logger.warning("[API] Audit not found: audit_id='%s'", audit_id)
+            raise HTTPException(
+                status_code=404,
+                detail=f"Audit with ID '{audit_id}' not found.",
+            )
+
+        findings_data = []
+        for finding in record.get("findings", []):
+            if finding.get("rule_id"):  # Filter out empty entries from OPTIONAL MATCH
+                findings_data.append(
+                    AuditFinding(
+                        rule_id=finding["rule_id"],
+                        rule_title=finding["rule_title"] or finding["rule_id"],
+                        status=finding["status"] or "NOT-APPLICABLE",
+                        confidence_score=finding["confidence_score"] or 0.0,
+                        evidence=finding["evidence"] or "",
+                        regulatory_foundation=finding["regulatory_foundation"] or "",
+                        gap_analysis=finding["gap_analysis"] or "",
+                    )
+                )
+
+        return AuditReport(
+            framework_id=record["framework_id"],
+            overall_compliance_score=record["overall_compliance_score"],
+            total_violations_found=record["total_violations_found"],
+            findings=findings_data,
+            audit_id=audit_id,
+            file_name=record["file_name"] or "",
+            timestamp=record["timestamp"] or 0,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        logger.error("[API] Failed to fetch audit from Neo4j: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch audit from Neo4j: {exc}",
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────

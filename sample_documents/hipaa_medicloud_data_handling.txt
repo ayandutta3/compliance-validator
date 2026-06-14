@@ -1,0 +1,24 @@
+MediCloud Storage Solutions — IT Security Architecture Document (2026)
+
+1. STORAGE SECURITY (Rule: HIPAA-INS-01)
+   All databases containing electronic Protected Health Information (ePHI) are 
+   encrypted at rest using the AES-256 standard.
+
+2. ACCESS LIMITS (Rule: HIPAA-INS-04)
+   Accounts require unique alphanumeric passwords. Workstation terminals are 
+   configured to automatically log out after 10 minutes of user inactivity. 
+   Database access logs capture all read, write, and delete transactions.
+
+3. CLOUD DEPLOYMENTS (Rule: HIPAA-INS-05)
+   We store data backups on Cloudcorp's public servers. We are currently 
+   negotiating the Business Associate Agreement (BAA) with Cloudcorp, but 
+   backups are already active despite the lack of a signed contract.
+
+4. TRANSMISSION SECURITY (Rule: HIPAA-INS-09)
+   Data is transmitted over public networks using SSL/TLS 1.2 encryption. 
+   Upgrade to TLS 1.3 is scheduled for next year's network refresh cycle.
+
+5. FACILITY CONTROLS (Rule: HIPAA-INS-10)
+   Server facilities housing patient database servers are restricted. Entry 
+   requires biometric palm-print scanners. A digital registry logs all 
+   physical visitors, and security escorts are required for non-staff guests.

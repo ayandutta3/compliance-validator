@@ -1,0 +1,25 @@
+Globex Corporation — Customer Privacy Statement (2026)
+
+1. DATA DISPOSAL & RETENTION (Rule: GDPR-2025-01)
+   When users request deletion of their records, Globex initiates a queue 
+   system. Data is permanently purged from our primary database tables 
+   within 90 days of the request.
+
+2. COMPLIANCE MANAGEMENT (Rule: GDPR-2025-02)
+   Globex processes user transaction data on a global scale. We do not 
+   maintain a centralized Data Protection Officer (DPO); privacy inquiries 
+   are routed to our regional office administration teams.
+
+3. DATA DOWNLOADS (Rule: GDPR-2025-04)
+   Registered users can request a copy of their records. These are compiled 
+   and made available as a downloadable PDF file through the account settings.
+
+4. MINIMAL PROCESSING (Rule: GDPR-2025-05)
+   Globex collects user names, email addresses, exact dates of birth, location 
+   coordinates, and social media handles during registration to optimize marketing 
+   relevancy.
+
+5. DATA ACCESS RIGHTS (Rule: GDPR-2025-09)
+   Data subjects may request an extract of their personal data. Globex charges 
+   a €25 administrative fee per request to cover processing and validation costs.
+   Requests are answered within 30 days.

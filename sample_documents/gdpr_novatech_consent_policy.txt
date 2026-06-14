@@ -1,0 +1,28 @@
+NovaTech Solutions — Consent & Data Export Framework (2026)
+
+1. CONSENT PROTOCOLS (Rule: GDPR-2025-03)
+   To simplify onboarding, registration forms include pre-checked boxes 
+   consenting to newsletters and analytical profiling. Users can opt out 
+   post-registration by navigating to privacy settings.
+
+2. PORTABILITY COMPONENT (Rule: GDPR-2025-04)
+   NovaTech provides data portability. Users can request a download of their 
+   account profile, containing raw transaction logs, in JSON or CSV format.
+
+3. DATA PROTECTION (Rule: GDPR-2025-05)
+   NovaTech limits personal data collection to name, email address, and 
+   payment token. We do not collect extraneous demographic details.
+
+4. TRANSFERS OUTSIDE EEA (Rule: GDPR-2025-06)
+   NovaTech processes customer backups in our Singapore data center. We 
+   have executed Standard Contractual Clauses (SCCs) between our European 
+   entity and our Singapore hosting subsidiary.
+
+5. RISK EVALUATION (Rule: GDPR-2025-07)
+   NovaTech deployed a machine learning engine that conducts automated profiling 
+   of user financial risks. We did not perform a Data Protection Impact 
+   Assessment (DPIA) because the system was adapted from an existing service.
+
+6. BREACH ACTION (Rule: GDPR-2025-08)
+   In the event of a security leak, NovaTech will notify the appropriate national 
+   supervisory authority within 4 business days of confirming the breach.

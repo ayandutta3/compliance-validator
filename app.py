@@ -310,6 +310,35 @@ st.markdown(
 
     /* Hide Streamlit branding ── */
     #MainMenu, footer { visibility: hidden; }
+
+    /* ── Sidebar nav buttons ── */
+    [data-testid="stSidebar"] .stButton > button {
+        background: transparent;
+        color: #94a3b8;
+        border: none;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        font-weight: 500;
+        font-size: 0.92rem;
+        width: 100%;
+        text-align: left;
+        transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+        margin-bottom: 0.25rem;
+    }
+    [data-testid="stSidebar"] .stButton > button:hover {
+        background: rgba(99,102,241,0.12);
+        color: #e2e8f0;
+        transform: none;
+        opacity: 1;
+    }
+    [data-testid="stSidebar"] .nav-active .stButton > button {
+        background: linear-gradient(90deg, rgba(99,102,241,0.22), rgba(56,189,248,0.10));
+        color: #818cf8;
+        border-left: 3px solid #6366f1;
+        padding-left: calc(1rem - 3px);
+        font-weight: 600;
+        box-shadow: 0 2px 12px rgba(99,102,241,0.15);
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -494,6 +523,59 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+    # ── Left Navigation ── (session_state tracks active view)
+    if "active_view" not in st.session_state:
+        st.session_state["active_view"] = "run_audit"
+
+    st.markdown(
+        '<div style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;'
+        'text-transform:uppercase;color:#475569;margin-bottom:0.5rem;">Navigation</div>',
+        unsafe_allow_html=True,
+    )
+
+    NAV_ITEMS = [
+        ("run_audit",     "🚀",  "Run Audit"),
+        ("audit_history", "📊",  "Audit History & Trends"),
+    ]
+
+    for view_key, icon, label in NAV_ITEMS:
+        is_active = st.session_state["active_view"] == view_key
+        if is_active:
+            # Render as a non-clickable highlighted HTML block
+            st.markdown(
+                f'<div style="'
+                f'display:flex;align-items:center;gap:0.55rem;'
+                f'background:linear-gradient(90deg,rgba(99,102,241,0.25),rgba(56,189,248,0.08));'
+                f'border-left:3px solid #6366f1;'
+                f'border-radius:0 8px 8px 0;'
+                f'padding:0.55rem 1rem 0.55rem calc(1rem - 3px);'
+                f'margin-bottom:0.3rem;'
+                f'font-size:0.92rem;font-weight:600;color:#a5b4fc;'
+                f'box-shadow:0 2px 12px rgba(99,102,241,0.15);'
+                f'cursor:default;'
+                f'">'
+                f'<span style="font-size:1rem;">{icon}</span>'
+                f'<span>{label}</span>'
+                f'<span style="margin-left:auto;font-size:0.65rem;'
+                f'background:#6366f1;color:#fff;padding:0.1rem 0.45rem;'
+                f'border-radius:20px;font-weight:700;letter-spacing:0.05em;">ACTIVE</span>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+        else:
+            if st.button(
+                f"{icon}  {label}",
+                key=f"nav_{view_key}",
+                use_container_width=True,
+            ):
+                st.session_state["active_view"] = view_key
+                st.rerun()
+
+    nav_selection = st.session_state["active_view"]
+
+
+    st.divider()
+
     # ── API Health ──
     st.markdown("##### 🔌 API Status")
     is_healthy, model_name = check_api_health()
@@ -509,64 +591,6 @@ with st.sidebar:
             '<span class="status-dot" style="background:#ef4444;"></span>'
             '<span style="color:#ef4444;font-size:0.85rem;font-weight:500;">Offline</span>'
             '<span style="color:#64748b;font-size:0.78rem;"> · Start main.py first</span>',
-            unsafe_allow_html=True,
-        )
-
-    st.divider()
-
-    # ── Framework selection ──
-    st.markdown("##### 📋 Compliance Framework")
-    framework_options = {v: k for k, v in FRAMEWORKS.items()}
-    selected_name = st.selectbox(
-        "Select framework",
-        options=list(framework_options.keys()),
-        label_visibility="collapsed",
-    )
-    selected_framework_id = framework_options[selected_name]
-    st.markdown(
-        f'<div style="font-size:0.75rem;color:#64748b;margin-top:-0.5rem;">'
-        f'ID: <code style="color:#818cf8;">{selected_framework_id}</code></div>',
-        unsafe_allow_html=True,
-    )
-
-    st.divider()
-
-    # ── File upload ──
-    st.markdown("##### 📄 Document Upload")
-    uploaded_file = st.file_uploader(
-        "Upload document",
-        type=["txt", "md"],
-        help="Plain-text (.txt) or Markdown (.md) document to audit. Max 5 MB.",
-        label_visibility="collapsed",
-    )
-
-    if uploaded_file:
-        st.markdown(
-            f'<div style="font-size:0.78rem;color:#64748b;margin-top:0.4rem;">'
-            f'📎 {uploaded_file.name} · '
-            f'{uploaded_file.size / 1024:.1f} KB</div>',
-            unsafe_allow_html=True,
-        )
-
-    st.divider()
-
-    # ── Run button ──
-    run_clicked = st.button("🚀 Run Audit", disabled=not uploaded_file or not is_healthy)
-
-    if not is_healthy:
-        st.warning("Start the FastAPI server first:\n```\npython main.py\n```")
-    elif not uploaded_file:
-        st.info("Upload a document to begin.")
-    else:
-        # Confirmation box — helps prevent framework/document mismatches
-        st.markdown(
-            f'<div style="background:#0f2847;border:1px solid #1e3a5f;border-radius:8px;'
-            f'padding:0.75rem 1rem;margin-top:0.5rem;font-size:0.78rem;color:#94a3b8;">'
-            f'<div style="color:#38bdf8;font-weight:600;margin-bottom:0.3rem;">'
-            f'📋 Audit Summary</div>'
-            f'<div>📄 <span style="color:#e2e8f0;">{uploaded_file.name}</span></div>'
-            f'<div>🏷️ Framework: <code style="color:#818cf8;">{selected_framework_id}</code></div>'
-            f'</div>',
             unsafe_allow_html=True,
         )
 
@@ -596,189 +620,470 @@ st.markdown(
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Run audit on button click
+# Views
 # ─────────────────────────────────────────────────────────────────────────────
 
-if run_clicked and uploaded_file:
-    file_bytes = uploaded_file.read()
-
-    with st.spinner("🔍 Retrieving rules from Neo4j and running AI audit…"):
-        progress = st.progress(0, text="Connecting to backend…")
-        time.sleep(0.3)
-        progress.progress(20, text="Uploading document…")
-        time.sleep(0.2)
-        progress.progress(40, text="Fetching compliance rules from Neo4j…")
-
-        result = run_audit(file_bytes, uploaded_file.name, selected_framework_id)
-
-        if result:
-            progress.progress(80, text="Processing AI findings…")
-            time.sleep(0.4)
-            progress.progress(100, text="Complete!")
-            time.sleep(0.3)
-            progress.empty()
-            st.session_state["audit_result"] = result
-            st.session_state["audit_framework"] = selected_name
-            st.session_state["audit_filename"] = uploaded_file.name
-        else:
-            progress.empty()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Render results
-# ─────────────────────────────────────────────────────────────────────────────
-
-if "audit_result" in st.session_state:
-    report: dict = st.session_state["audit_result"]
-    findings: list[dict] = report.get("findings", [])
-    score: float = report.get("overall_compliance_score", 0.0)
-    # Always recompute from actual findings — the LLM can mis-count NOT-APPLICABLE
-    # findings as violations. The backend patches this too, but we do it here as
-    # a second layer of defence.
-    violations: int = sum(1 for f in findings if f.get("status") == "NON-COMPLIANT")
-    compliant_count = sum(1 for f in findings if f.get("status") == "COMPLIANT")
-    na_count = sum(1 for f in findings if f.get("status") == "NOT-APPLICABLE")
-
-    st.markdown(
-        f'<div class="section-header">📊 Audit Report — {st.session_state["audit_framework"]}</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        f'<div style="font-size:0.8rem;color:#64748b;margin-top:-0.8rem;margin-bottom:1.2rem;">'
-        f'Document: <span style="color:#94a3b8;">{st.session_state["audit_filename"]}</span> · '
-        f'Framework ID: <code style="color:#818cf8;">{report.get("framework_id")}</code></div>',
-        unsafe_allow_html=True,
-    )
-
-    # ── Top metrics row ──
-    col_gauge, col_m1, col_m2, col_m3, col_m4 = st.columns([2, 1, 1, 1, 1])
-
-    with col_gauge:
-        render_gauge(score)
-
-    with col_m1:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-label">Rules Evaluated</div>'
-            f'<div class="metric-value" style="color:#818cf8;">{len(findings)}</div>'
-            f'<div class="metric-sub">total rules</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-    with col_m2:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-label">Compliant</div>'
-            f'<div class="metric-value" style="color:#22c55e;">{compliant_count}</div>'
-            f'<div class="metric-sub">rules passed</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-    with col_m3:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-label">Violations</div>'
-            f'<div class="metric-value" style="color:#ef4444;">{violations}</div>'
-            f'<div class="metric-sub">non-compliant</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-    with col_m4:
-        st.markdown(
-            f'<div class="metric-card">'
-            f'<div class="metric-label">Not Applicable</div>'
-            f'<div class="metric-value" style="color:#94a3b8;">{na_count}</div>'
-            f'<div class="metric-sub">out of scope</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-    st.divider()
-
-    # ── Filter toolbar ──
-    left_col, right_col = st.columns([3, 1])
-    with left_col:
-        st.markdown('<div class="section-header">📋 Per-Rule Findings</div>', unsafe_allow_html=True)
-    with right_col:
-        filter_status = st.selectbox(
-            "Filter by status",
-            options=["All", "NON-COMPLIANT", "COMPLIANT", "NOT-APPLICABLE"],
+if nav_selection == "run_audit":
+    st.markdown('<div class="section-header">🚀 Run Compliance Audit</div>', unsafe_allow_html=True)
+    
+    col_framework, col_file = st.columns([1, 1])
+    
+    with col_framework:
+        st.markdown("##### 📋 Compliance Framework")
+        framework_options = {v: k for k, v in FRAMEWORKS.items()}
+        selected_name = st.selectbox(
+            "Select framework",
+            options=list(framework_options.keys()),
             label_visibility="collapsed",
         )
+        selected_framework_id = framework_options[selected_name]
+        st.markdown(
+            f'<div style="font-size:0.75rem;color:#64748b;margin-top:-0.5rem;margin-bottom:1rem;">'
+            f'ID: <code style="color:#818cf8;">{selected_framework_id}</code></div>',
+            unsafe_allow_html=True,
+        )
+        
+    with col_file:
+        st.markdown("##### 📄 Document Upload")
+        uploaded_file = st.file_uploader(
+            "Upload document",
+            type=["txt", "md"],
+            help="Plain-text (.txt) or Markdown (.md) document to audit. Max 5 MB.",
+            label_visibility="collapsed",
+        )
+        if uploaded_file:
+            st.markdown(
+                f'<div style="font-size:0.78rem;color:#64748b;margin-top:0.4rem;">'
+                f'📎 {uploaded_file.name} · '
+                f'{uploaded_file.size / 1024:.1f} KB</div>',
+                unsafe_allow_html=True,
+            )
 
-    # ── Finding cards ──
-    filtered = findings if filter_status == "All" else [
-        f for f in findings if f.get("status") == filter_status
-    ]
+    # Confirmation box — helps prevent framework/document mismatches
+    if uploaded_file and is_healthy:
+        st.markdown(
+            f'<div style="background:#0f2847;border:1px solid #1e3a5f;border-radius:8px;'
+            f'padding:0.75rem 1rem;margin-top:1rem;margin-bottom:1rem;font-size:0.78rem;color:#94a3b8;">'
+            f'<div style="color:#38bdf8;font-weight:600;margin-bottom:0.3rem;">'
+            f'📋 Audit Summary</div>'
+            f'<div>📄 Document: <span style="color:#e2e8f0;">{uploaded_file.name}</span></div>'
+            f'<div>🏷️ Framework: <code style="color:#818cf8;">{selected_framework_id}</code> ({selected_name})</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
 
-    if not filtered:
-        st.info(f"No findings with status **{filter_status}**.")
+    # ── Run button ──
+    run_clicked = st.button("🚀 Run Compliance Audit", disabled=not uploaded_file or not is_healthy)
+    
+    if not is_healthy:
+        st.warning("Start the FastAPI server first:\n```\npython main.py\n```")
+    elif not uploaded_file:
+        st.info("Upload a document to begin.")
+
+    # Execute audit
+    if run_clicked and uploaded_file:
+        file_bytes = uploaded_file.read()
+
+        with st.spinner("🔍 Retrieving rules from Neo4j and running AI audit…"):
+            progress = st.progress(0, text="Connecting to backend…")
+            time.sleep(0.3)
+            progress.progress(20, text="Uploading document…")
+            time.sleep(0.2)
+            progress.progress(40, text="Fetching compliance rules from Neo4j…")
+
+            result = run_audit(file_bytes, uploaded_file.name, selected_framework_id)
+
+            if result:
+                progress.progress(80, text="Processing AI findings…")
+                time.sleep(0.4)
+                progress.progress(100, text="Complete!")
+                time.sleep(0.3)
+                progress.empty()
+                st.session_state["audit_result"] = result
+                st.session_state["audit_framework"] = selected_name
+                st.session_state["audit_filename"] = uploaded_file.name
+            else:
+                progress.empty()
+
+    # Render results
+    if "audit_result" in st.session_state:
+        report: dict = st.session_state["audit_result"]
+        findings: list[dict] = report.get("findings", [])
+        score: float = report.get("overall_compliance_score", 0.0)
+        violations: int = sum(1 for f in findings if f.get("status") == "NON-COMPLIANT")
+        compliant_count = sum(1 for f in findings if f.get("status") == "COMPLIANT")
+        na_count = sum(1 for f in findings if f.get("status") == "NOT-APPLICABLE")
+
+        st.markdown(
+            f'<div class="section-header">📊 Audit Report — {st.session_state["audit_framework"]}</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f'<div style="font-size:0.8rem;color:#64748b;margin-top:-0.8rem;margin-bottom:1.2rem;">'
+            f'Document: <span style="color:#94a3b8;">{st.session_state["audit_filename"]}</span> · '
+            f'Framework ID: <code style="color:#818cf8;">{report.get("framework_id")}</code></div>',
+            unsafe_allow_html=True,
+        )
+
+        # ── Top metrics row ──
+        col_gauge, col_m1, col_m2, col_m3, col_m4 = st.columns([2, 1, 1, 1, 1])
+
+        with col_gauge:
+            render_gauge(score)
+
+        with col_m1:
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Rules Evaluated</div>'
+                f'<div class="metric-value" style="color:#818cf8;">{len(findings)}</div>'
+                f'<div class="metric-sub">total rules</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        with col_m2:
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Compliant</div>'
+                f'<div class="metric-value" style="color:#22c55e;">{compliant_count}</div>'
+                f'<div class="metric-sub">rules passed</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        with col_m3:
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Violations</div>'
+                f'<div class="metric-value" style="color:#ef4444;">{violations}</div>'
+                f'<div class="metric-sub">non-compliant</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        with col_m4:
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Not Applicable</div>'
+                f'<div class="metric-value" style="color:#94a3b8;">{na_count}</div>'
+                f'<div class="metric-sub">out of scope</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        st.divider()
+
+        # ── Filter toolbar ──
+        left_col, right_col = st.columns([3, 1])
+        with left_col:
+            st.markdown('<div class="section-header">📋 Per-Rule Findings</div>', unsafe_allow_html=True)
+        with right_col:
+            filter_status = st.selectbox(
+                "Filter by status",
+                options=["All", "NON-COMPLIANT", "COMPLIANT", "NOT-APPLICABLE"],
+                label_visibility="collapsed",
+            )
+
+        # ── Finding cards ──
+        filtered = findings if filter_status == "All" else [
+            f for f in findings if f.get("status") == filter_status
+        ]
+
+        if not filtered:
+            st.info(f"No findings with status **{filter_status}**.")
+        else:
+            # Sort: NON-COMPLIANT first, then COMPLIANT, then NOT-APPLICABLE
+            order = {"NON-COMPLIANT": 0, "COMPLIANT": 1, "NOT-APPLICABLE": 2}
+            filtered_sorted = sorted(filtered, key=lambda f: order.get(f.get("status", ""), 99))
+
+            for finding in filtered_sorted:
+                render_finding_card(finding)
+
+        st.divider()
+
+        # ── Summary banner ──
+        if violations == 0:
+            st.success(
+                f"🎉 **Fully Compliant** — All {len(findings)} rules passed for the "
+                f"**{report.get('framework_id')}** framework."
+            )
+        else:
+            st.warning(
+                f"⚠️ **{violations} violation(s) found** — Review the NON-COMPLIANT findings above "
+                f"and address the identified gaps to achieve full compliance."
+            )
+
+        # ── Download report ──
+        st.markdown('<div class="section-header">💾 Export Report</div>', unsafe_allow_html=True)
+        json_str = json.dumps(report, indent=2)
+        st.download_button(
+            label="⬇️ Download Full JSON Report",
+            data=json_str,
+            file_name=f"audit_{report.get('framework_id', 'report')}_{int(time.time())}.json",
+            mime="application/json",
+        )
+
     else:
-        # Sort: NON-COMPLIANT first, then COMPLIANT, then NOT-APPLICABLE
-        order = {"NON-COMPLIANT": 0, "COMPLIANT": 1, "NOT-APPLICABLE": 2}
-        filtered_sorted = sorted(filtered, key=lambda f: order.get(f.get("status", ""), 99))
+        st.markdown(
+            """
+            <div style="text-align:center;padding:4rem 2rem;color:#475569;">
+                <div style="font-size:4rem;margin-bottom:1rem;">📄</div>
+                <div style="font-size:1.2rem;font-weight:600;color:#64748b;margin-bottom:0.5rem;">
+                    Ready to Audit
+                </div>
+                <div style="font-size:0.9rem;color:#475569;max-width:400px;margin:auto;line-height:1.6;">
+                    Select a compliance framework, upload your document,
+                    then click <strong style="color:#818cf8;">Run Compliance Audit</strong> to generate an AI-powered report.
+                </div>
+                <div style="margin-top:2rem;display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;">
+                    <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
+                                 padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
+                        🏦 SEC-2026 · Financial Regulations
+                    </div>
+                    <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
+                                 padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
+                        🏥 HIPAA-INS · Health Insurance
+                    </div>
+                    <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
+                                 padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
+                        🌍 GDPR-EU-2025 · Data Protection
+                    </div>
+                    <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
+                                 padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
+                        🌱 ESG-CORP · Sustainability
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-        for finding in filtered_sorted:
-            render_finding_card(finding)
 
-    st.divider()
+elif nav_selection == "audit_history":
+    st.markdown('<div class="section-header">📊 Compliance History & Analytics</div>', unsafe_allow_html=True)
 
-    # ── Summary banner ──
-    if violations == 0:
-        st.success(
-            f"🎉 **Fully Compliant** — All {len(findings)} rules passed for the "
-            f"**{report.get('framework_id')}** framework."
+    # 1. Fetch historical audits list from backend
+    try:
+        resp = requests.get(f"{API_BASE_URL}/api/v1/audits", timeout=5)
+        if resp.status_code == 200:
+            history = resp.json()
+        else:
+            history = []
+            st.error(f"Failed to fetch audit history. API status code: {resp.status_code}")
+    except Exception as exc:
+        history = []
+        st.warning("⚠️ Could not retrieve history. Ensure the FastAPI backend is running and Neo4j is online.")
+
+    if not history:
+        st.markdown(
+            """
+            <div style="text-align:center;padding:4rem 2rem;color:#475569;">
+                <div style="font-size:4rem;margin-bottom:1rem;">📈</div>
+                <div style="font-size:1.2rem;font-weight:600;color:#64748b;margin-bottom:0.5rem;">
+                    No History Recorded Yet
+                </div>
+                <div style="font-size:0.9rem;color:#475569;max-width:400px;margin:auto;line-height:1.6;">
+                    Once you complete compliance audits in the <strong>Run Audit</strong> section,
+                    the results will be persisted and visualized here.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
     else:
-        st.warning(
-            f"⚠️ **{violations} violation(s) found** — Review the NON-COMPLIANT findings above "
-            f"and address the identified gaps to achieve full compliance."
+        import pandas as pd
+        import datetime
+
+        # Create DataFrame
+        df = pd.DataFrame(history)
+        
+        # Convert timestamp to human readable date
+        df["date"] = df["timestamp"].apply(lambda ts: datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S"))
+        
+        # Sort chronologically for trends
+        df_sorted = df.sort_values("timestamp")
+
+        # ── Dashboard Statistics Row ──
+        st.markdown("##### 📈 Overall Statistics")
+        avg_score = df["overall_score"].mean()
+        total_audits = len(df)
+        total_violations = df["total_violations"].sum()
+
+        col_stat1, col_stat2, col_stat3 = st.columns(3)
+        with col_stat1:
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Total Audits Run</div>'
+                f'<div class="metric-value" style="color:#818cf8;">{total_audits}</div>'
+                f'<div class="metric-sub">documents audited</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+        with col_stat2:
+            color = score_color(avg_score)
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Average Compliance Score</div>'
+                f'<div class="metric-value" style="color:{color};">{avg_score:.1f}%</div>'
+                f'<div class="metric-sub">{score_label(avg_score)}</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+        with col_stat3:
+            st.markdown(
+                f'<div class="metric-card">'
+                f'<div class="metric-label">Total Violations Detected</div>'
+                f'<div class="metric-value" style="color:#ef4444;">{total_violations}</div>'
+                f'<div class="metric-sub">rules violated</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        st.divider()
+
+        # ── Chart Row: Trend & Framework Breakdown ──
+        col_chart1, col_chart2 = st.columns(2)
+        with col_chart1:
+            st.markdown("##### 📈 Compliance Score Trend")
+            chart_df = df_sorted[["date", "overall_score"]].set_index("date")
+            st.line_chart(chart_df, height=250)
+
+        with col_chart2:
+            st.markdown("##### 🏷️ Framework Distribution")
+            framework_counts = df["framework_id"].value_counts().reset_index()
+            framework_counts.columns = ["Framework", "Count"]
+            st.bar_chart(framework_counts.set_index("Framework"), height=250)
+
+        st.divider()
+
+        # ── Historical Explorer Row ──
+        st.markdown("##### 🔍 Historical Reports Explorer")
+
+        # Load Audit Option
+        audit_options = {
+            f"[{rec['date']}] {rec['file_name']} ({rec['framework_id']}) — Score: {rec['overall_score']:.0f}%": rec["audit_id"]
+            for rec in df.to_dict("records")
+        }
+
+        selected_past_audit_label = st.selectbox(
+            "Select a historical audit to load and view details:",
+            options=["-- Select an Audit --"] + list(audit_options.keys())
         )
 
-    # ── Download report ──
-    st.markdown('<div class="section-header">💾 Export Report</div>', unsafe_allow_html=True)
-    json_str = json.dumps(report, indent=2)
-    st.download_button(
-        label="⬇️ Download Full JSON Report",
-        data=json_str,
-        file_name=f"audit_{report.get('framework_id', 'report')}_{int(time.time())}.json",
-        mime="application/json",
-    )
+        if selected_past_audit_label != "-- Select an Audit --":
+            selected_audit_id = audit_options[selected_past_audit_label]
 
-else:
-    # ── Empty state ──
-    st.markdown(
-        """
-        <div style="text-align:center;padding:4rem 2rem;color:#475569;">
-            <div style="font-size:4rem;margin-bottom:1rem;">📄</div>
-            <div style="font-size:1.2rem;font-weight:600;color:#64748b;margin-bottom:0.5rem;">
-                Ready to Audit
-            </div>
-            <div style="font-size:0.9rem;color:#475569;max-width:400px;margin:auto;line-height:1.6;">
-                Select a compliance framework from the sidebar, upload your document,
-                then click <strong style="color:#818cf8;">Run Audit</strong> to generate an AI-powered report.
-            </div>
-            <div style="margin-top:2rem;display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;">
-                <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
-                             padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
-                    🏦 SEC-2026 · Financial Regulations
-                </div>
-                <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
-                             padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
-                    🏥 HIPAA-INS · Health Insurance
-                </div>
-                <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
-                             padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
-                    🌍 GDPR-EU-2025 · Data Protection
-                </div>
-                <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
-                             padding:0.8rem 1.2rem;font-size:0.82rem;color:#94a3b8;">
-                    🌱 ESG-CORP · Sustainability
-                </div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+            with st.spinner("⏳ Loading audit report from database..."):
+                try:
+                    past_resp = requests.get(f"{API_BASE_URL}/api/v1/audits/{selected_audit_id}", timeout=5)
+                    if past_resp.status_code == 200:
+                        past_report = past_resp.json()
+
+                        st.markdown(
+                            f'<div class="section-header">📜 Loaded Historical Audit — {selected_past_audit_label}</div>',
+                            unsafe_allow_html=True
+                        )
+
+                        past_findings = past_report.get("findings", [])
+                        past_score = past_report.get("overall_compliance_score", 0.0)
+                        past_violations = sum(1 for f in past_findings if f.get("status") == "NON-COMPLIANT")
+                        past_compliant = sum(1 for f in past_findings if f.get("status") == "COMPLIANT")
+                        past_na = sum(1 for f in past_findings if f.get("status") == "NOT-APPLICABLE")
+
+                        p_col_gauge, p_col_m1, p_col_m2, p_col_m3, p_col_m4 = st.columns([2, 1, 1, 1, 1])
+
+                        with p_col_gauge:
+                            render_gauge(past_score)
+
+                        with p_col_m1:
+                            st.markdown(
+                                f'<div class="metric-card">'
+                                f'<div class="metric-label">Rules Evaluated</div>'
+                                f'<div class="metric-value" style="color:#818cf8;">{len(past_findings)}</div>'
+                                f'<div class="metric-sub">total rules</div>'
+                                f'</div>',
+                                unsafe_allow_html=True,
+                            )
+
+                        with p_col_m2:
+                            st.markdown(
+                                f'<div class="metric-card">'
+                                f'<div class="metric-label">Compliant</div>'
+                                f'<div class="metric-value" style="color:#22c55e;">{past_compliant}</div>'
+                                f'<div class="metric-sub">rules passed</div>'
+                                f'</div>',
+                                unsafe_allow_html=True,
+                            )
+
+                        with p_col_m3:
+                            st.markdown(
+                                f'<div class="metric-card">'
+                                f'<div class="metric-label">Violations</div>'
+                                f'<div class="metric-value" style="color:#ef4444;">{past_violations}</div>'
+                                f'<div class="metric-sub">non-compliant</div>'
+                                f'</div>',
+                                unsafe_allow_html=True,
+                            )
+
+                        with p_col_m4:
+                            st.markdown(
+                                f'<div class="metric-card">'
+                                f'<div class="metric-label">Not Applicable</div>'
+                                f'<div class="metric-value" style="color:#94a3b8;">{past_na}</div>'
+                                f'<div class="metric-sub">out of scope</div>'
+                                f'</div>',
+                                unsafe_allow_html=True,
+                            )
+
+                        st.divider()
+
+                        p_left, p_right = st.columns([3, 1])
+                        with p_left:
+                            st.markdown('<div class="section-header">📋 Historical Findings</div>', unsafe_allow_html=True)
+                        with p_right:
+                            p_filter_status = st.selectbox(
+                                "Filter findings",
+                                options=["All", "NON-COMPLIANT", "COMPLIANT", "NOT-APPLICABLE"],
+                                key="past_filter_status",
+                                label_visibility="collapsed"
+                            )
+
+                        p_filtered = past_findings if p_filter_status == "All" else [
+                            f for f in past_findings if f.get("status") == p_filter_status
+                        ]
+
+                        if not p_filtered:
+                            st.info(f"No findings with status **{p_filter_status}**.")
+                        else:
+                            p_order = {"NON-COMPLIANT": 0, "COMPLIANT": 1, "NOT-APPLICABLE": 2}
+                            p_filtered_sorted = sorted(p_filtered, key=lambda f: p_order.get(f.get("status", ""), 99))
+
+                            for finding in p_filtered_sorted:
+                                render_finding_card(finding)
+
+                        st.divider()
+
+                        st.markdown('<div class="section-header">💾 Export Loaded Report</div>', unsafe_allow_html=True)
+                        p_json_str = json.dumps(past_report, indent=2)
+                        st.download_button(
+                            label="⬇️ Download Loaded JSON Report",
+                            data=p_json_str,
+                            file_name=f"audit_{past_report.get('framework_id', 'report')}_{past_report.get('timestamp')}.json",
+                            mime="application/json",
+                            key="past_download_btn"
+                        )
+                    else:
+                        st.error(f"Failed to fetch historical audit details (Status Code: {past_resp.status_code})")
+                except Exception as exc:
+                    st.error(f"Error loading historical audit: {exc}")
+
+        st.divider()
+
+        st.markdown("##### 📂 All Recorded Audits")
+        display_df = df_sorted[["date", "file_name", "framework_id", "overall_score", "total_violations"]].copy()
+        display_df.columns = ["Date & Time", "Filename", "Framework ID", "Compliance Score", "Violations"]
+        st.dataframe(
+            display_df.sort_values("Date & Time", ascending=False),
+            use_container_width=True,
+            hide_index=True
+        )

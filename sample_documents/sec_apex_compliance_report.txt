@@ -1,0 +1,35 @@
+Apex Financial Corp — Regulatory Compliance Assessment (FY 2026)
+
+1. CAPITAL BUFFER (Rule: SEC-2026-01)
+   Apex Financial Corp currently holds a capital cushion buffer of 9.8% of total 
+   risk-weighted assets. This is below the statutory requirement of 10.5% due 
+   to recent loan portfolio expansions.
+
+2. FINANCIAL SUBMISSIONS (Rule: SEC-2026-02)
+   All quarterly financial reports were audited and submitted within 12 days of 
+   the quarter-end. In Q3, a loan of $150,000 was issued to the Chief Operating 
+   Officer; this transaction has been fully disclosed in Note 14 of our financial 
+   statements.
+
+3. GOVERNANCE (Rule: SEC-2026-03)
+   The company's risk governance is supervised by the risk committee, which 
+   comprises two non-executive directors and one executive director.
+
+4. LIQUIDITY PROFILE (Rule: SEC-2026-04)
+   Our Liquidity Coverage Ratio (LCR) is currently measured at 85% of projected 
+   outflows under stress, below the regulatory standard, and management has 
+   instituted a recovery plan.
+
+5. TRADING CONTROLS (Rule: SEC-2026-05)
+   Apex enforces an insider trading policy. Trading blackout periods are active 
+   starting 14 calendar days prior to the end of each fiscal quarter and remain 
+   in place until 48 hours post-earnings release.
+
+6. DATA DISCLOSURE (Rule: SEC-2026-06)
+   On March 4, 2026, a database intrusion was detected. It was determined to be 
+   material on March 7, 2026. A public SEC filing (Form 8-K) was compiled and 
+   submitted on March 11, 2026 (4 business days later).
+
+7. RETENTION LOGS (Rule: SEC-2026-09)
+   Corporate archives maintain all transaction records, accounting books, and 
+   general journals in a read-only database environment for 7 years post-creation.
